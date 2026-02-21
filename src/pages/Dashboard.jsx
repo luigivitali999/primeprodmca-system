@@ -71,8 +71,8 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500 mt-1">Panoramica DMCA Intelligence</p>
+        <h1 className="text-2xl font-bold" style={{ color: '#e2e8f0', letterSpacing: '-0.01em' }}>Dashboard</h1>
+        <p style={{ color: '#475569', marginTop: 4, fontSize: 14 }}>Panoramica DMCA Intelligence</p>
       </div>
 
       {/* Stats Grid */}
