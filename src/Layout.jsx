@@ -112,11 +112,15 @@ export default function Layout({ children, currentPageName }) {
                     : 'text-slate-500 hover:text-slate-200'
                   }
                 `}
+              style={isActive(item.page) ? {
+                background: 'rgba(99,102,241,0.15)',
+                boxShadow: 'inset 0 0 0 1px rgba(99,102,241,0.25)',
+              } : {}}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
                 {item.name}
                 {item.page === 'Leaks' && criticalLeaks > 0 && (
-                  <Badge className="ml-auto bg-red-500 text-white text-[10px] px-1.5">
+                  <Badge className="ml-auto text-[10px] px-1.5" style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)' }}>
                     {criticalLeaks}
                   </Badge>
                 )}
@@ -127,10 +131,10 @@ export default function Layout({ children, currentPageName }) {
 
         {/* User Section */}
         {user && (
-          <div className="p-4 border-t border-slate-800">
+          <div className="p-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
             <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9 bg-slate-700">
-                <AvatarFallback className="text-slate-300 text-sm">
+              <Avatar className="h-9 w-9" style={{ background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)' }}>
+                <AvatarFallback className="text-sm" style={{ color: '#a5b4fc', background: 'transparent' }}>
                   {user.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -141,7 +145,7 @@ export default function Layout({ children, currentPageName }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-slate-400 hover:text-white hover:bg-slate-800"
+                className="text-slate-500 hover:text-slate-200 hover:bg-transparent"
                 onClick={() => base44.auth.logout()}
               >
                 <LogOut className="w-4 h-4" />
@@ -152,7 +156,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 flex items-center justify-between px-4" style={{ background: '#0a1120', borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
             <Shield className="w-4 h-4 text-white" />
@@ -173,8 +177,8 @@ export default function Layout({ children, currentPageName }) {
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/60" onClick={() => setSidebarOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-64 bg-slate-900">
-            <div className="flex h-14 items-center justify-between px-4 border-b border-slate-800">
+          <aside className="absolute inset-y-0 left-0 w-64" style={{ background: '#0a1120', borderRight: '1px solid rgba(99,102,241,0.12)' }}>
+            <div className="flex h-14 items-center justify-between px-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-blue-500" />
                 <span className="text-base font-bold text-white">PRIME</span>
@@ -193,7 +197,7 @@ export default function Layout({ children, currentPageName }) {
                     onClick={() => setSidebarOpen(false)}
                     className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                      ${isActive(item.page) ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}
+                      ${isActive(item.page) ? 'text-white' : 'text-slate-500 hover:text-slate-200'}
                     `}
                   >
                     <Icon className="w-5 h-5" />
@@ -208,7 +212,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className="lg:pl-64 pt-14 lg:pt-0 min-h-screen">
-        <div className="p-4 lg:p-8">
+        <div className="p-4 lg:p-8" style={{ background: '#080e1a', minHeight: '100vh' }}>
           {children}
         </div>
       </main>
