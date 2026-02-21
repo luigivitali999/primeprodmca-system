@@ -70,22 +70,23 @@ export default function Layout({ children, currentPageName }) {
   const isActive = (page) => currentPageName === page;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen" style={{ background: '#080e1a' }}>
       <style>{`
         :root {
-          --prime-navy: #0f172a;
+          --prime-navy: #0a1120;
           --prime-blue: #3b82f6;
           --prime-indigo: #6366f1;
           --prime-emerald: #10b981;
           --prime-amber: #f59e0b;
           --prime-red: #ef4444;
         }
+        body { background: #080e1a !important; }
       `}</style>
 
       {/* Sidebar Desktop */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 hidden lg:flex lg:flex-col">
+      <aside className="fixed inset-y-0 left-0 z-50 w-64 hidden lg:flex lg:flex-col" style={{ background: '#0a1120', borderRight: '1px solid rgba(99,102,241,0.12)' }}>
         {/* Logo */}
-        <div className="flex h-16 items-center gap-3 px-6 border-b border-slate-800">
+        <div className="flex h-16 items-center gap-3 px-6" style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
             <Shield className="w-5 h-5 text-white" />
           </div>
@@ -105,10 +106,10 @@ export default function Layout({ children, currentPageName }) {
                 key={item.name}
                 to={createPageUrl(item.page)}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative
                   ${active 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25' 
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                    ? 'text-white' 
+                    : 'text-slate-500 hover:text-slate-200'
                   }
                 `}
               >
