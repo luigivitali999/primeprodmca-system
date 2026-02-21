@@ -1,8 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 export default function TopDomainsTable({ domains }) {
   const sortedDomains = [...domains]
@@ -10,44 +7,62 @@ export default function TopDomainsTable({ domains }) {
     .slice(0, 8);
 
   return (
-    <Card className="bg-white border-0 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-slate-900">Top Domini per Leak</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y divide-slate-100">
-          {sortedDomains.map((domain, idx) => (
-            <div key={domain.id} className="flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors">
-              <span className="text-sm font-medium text-slate-400 w-5">{idx + 1}</span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-slate-900 truncate">{domain.domain_name}</p>
+    <div style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.12)', borderRadius: 12 }} className="overflow-hidden">
+      <div className="px-6 pt-5 pb-3">
+        <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+          TOP DOMINI PER LEAK
+        </p>
+      </div>
+      <div>
+        {sortedDomains.map((domain, idx) => {
+          const rate = Math.round(domain.removal_rate || 0);
+          return (
+            <div
+              key={domain.id}
+              className="flex items-center gap-4 px-6 py-3 transition-colors"
+              style={{ borderTop: '1px solid rgba(99,102,241,0.07)' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.05)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <span style={{ color: '#334155', fontSize: 12, fontFamily: 'monospace', width: 16, flexShrink: 0 }}>{String(idx + 1).padStart(2, '0')}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex items-center gap-1.5">
+                  <p style={{ color: '#cbd5e1', fontSize: 13, fontWeight: 500 }} className="truncate">{domain.domain_name}</p>
                   {domain.high_risk_flag && (
-                    <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                    <AlertTriangle style={{ width: 12, height: 12, color: '#f87171', flexShrink: 0 }} />
                   )}
                 </div>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-xs text-slate-500">{domain.total_leaks || 0} leak</span>
-                  <span className="text-xs text-slate-400">•</span>
-                  <span className="text-xs text-emerald-600">{domain.total_removed || 0} rimossi</span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span style={{ color: '#475569', fontSize: 11 }}>{domain.total_leaks || 0} leak</span>
+                  <span style={{ color: '#334155', fontSize: 11 }}>·</span>
+                  <span style={{ color: '#34d399', fontSize: 11 }}>{domain.total_removed || 0} rimossi</span>
                 </div>
               </div>
-              <div className="w-24">
+              <div style={{ width: 80, flexShrink: 0 }}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-slate-500">Rimozione</span>
-                  <span className="text-xs font-medium text-slate-700">{Math.round(domain.removal_rate || 0)}%</span>
+                  <span style={{ color: '#475569', fontSize: 10 }}>rimozione</span>
+                  <span style={{ color: rate >= 70 ? '#34d399' : rate >= 40 ? '#fbbf24' : '#f87171', fontSize: 11, fontWeight: 700 }}>{rate}%</span>
                 </div>
-                <Progress value={domain.removal_rate || 0} className="h-1.5" />
+                <div style={{ height: 3, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${rate}%`,
+                    background: rate >= 70 ? '#34d399' : rate >= 40 ? '#fbbf24' : '#f87171',
+                    boxShadow: rate >= 70 ? '0 0 6px #34d399' : rate >= 40 ? '0 0 6px #fbbf24' : '0 0 6px #f87171',
+                    borderRadius: 2,
+                    transition: 'width 0.6s ease',
+                  }} />
+                </div>
               </div>
             </div>
-          ))}
-          {sortedDomains.length === 0 && (
-            <div className="px-6 py-8 text-center text-sm text-slate-500">
-              Nessun dominio registrato
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          );
+        })}
+        {sortedDomains.length === 0 && (
+          <div className="px-6 py-8 text-center" style={{ color: '#334155', fontSize: 13 }}>
+            Nessun dominio registrato
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

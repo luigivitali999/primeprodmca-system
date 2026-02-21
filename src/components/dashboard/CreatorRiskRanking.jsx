@@ -1,22 +1,12 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
-const RISK_COLORS = {
-  critical: 'bg-red-100 text-red-700 border-red-200',
-  high: 'bg-amber-100 text-amber-700 border-amber-200',
-  medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  low: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-};
-
-const RISK_LABELS = {
-  critical: 'Critico',
-  high: 'Alto',
-  medium: 'Medio',
-  low: 'Basso',
+const RISK_CONFIG = {
+  critical: { label: 'Critico', color: '#f87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.25)' },
+  high:     { label: 'Alto',    color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.25)'  },
+  medium:   { label: 'Medio',   color: '#a5b4fc', bg: 'rgba(165,180,252,0.1)',  border: 'rgba(165,180,252,0.2)'  },
+  low:      { label: 'Basso',   color: '#34d399', bg: 'rgba(52,211,153,0.1)',   border: 'rgba(52,211,153,0.2)'   },
 };
 
 export default function CreatorRiskRanking({ creators }) {
@@ -25,45 +15,61 @@ export default function CreatorRiskRanking({ creators }) {
     .slice(0, 6);
 
   return (
-    <Card className="bg-white border-0 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-slate-900">Creator per Rischio</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y divide-slate-100">
-          {sortedCreators.map((creator) => (
-            <Link 
-              key={creator.id} 
+    <div style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.12)', borderRadius: 12 }} className="overflow-hidden">
+      <div className="px-6 pt-5 pb-3">
+        <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+          CREATOR PER RISCHIO
+        </p>
+      </div>
+      <div>
+        {sortedCreators.map((creator) => {
+          const risk = RISK_CONFIG[creator.risk_level] || RISK_CONFIG.low;
+          const initials = creator.stage_name?.charAt(0).toUpperCase() || '?';
+          const score = Math.round(creator.risk_score || 0);
+          return (
+            <Link
+              key={creator.id}
               to={createPageUrl(`CreatorDetail?id=${creator.id}`)}
-              className="flex items-center gap-4 px-6 py-3 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-4 px-6 py-3 transition-colors"
+              style={{ borderTop: '1px solid rgba(99,102,241,0.07)', textDecoration: 'none' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.05)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              <Avatar className="h-9 w-9 bg-gradient-to-br from-slate-200 to-slate-300">
-                <AvatarFallback className="text-slate-600 text-sm font-medium">
-                  {creator.stage_name?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">{creator.stage_name}</p>
-                <p className="text-xs text-slate-500">{creator.active_leaks || 0} leak attivi</p>
+              <div style={{
+                width: 34, height: 34, borderRadius: 8, flexShrink: 0,
+                background: risk.bg, border: `1px solid ${risk.border}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: risk.color, fontSize: 13, fontWeight: 700,
+              }}>
+                {initials}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ color: '#cbd5e1', fontSize: 13, fontWeight: 500 }} className="truncate">{creator.stage_name}</p>
+                <p style={{ color: '#475569', fontSize: 11 }}>{creator.active_leaks || 0} leak attivi</p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900">{Math.round(creator.risk_score || 0)}</p>
-                  <p className="text-xs text-slate-500">score</p>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ color: risk.color, fontSize: 16, fontWeight: 700, lineHeight: 1, textShadow: `0 0 8px ${risk.color}` }}>{score}</p>
+                  <p style={{ color: '#334155', fontSize: 10 }}>score</p>
                 </div>
-                <Badge variant="outline" className={`text-xs ${RISK_COLORS[creator.risk_level] || RISK_COLORS.low}`}>
-                  {RISK_LABELS[creator.risk_level] || 'N/D'}
-                </Badge>
+                <div style={{
+                  padding: '2px 8px', borderRadius: 6,
+                  background: risk.bg, border: `1px solid ${risk.border}`,
+                  color: risk.color, fontSize: 10, fontWeight: 600,
+                  letterSpacing: '0.05em',
+                }}>
+                  {risk.label}
+                </div>
               </div>
             </Link>
-          ))}
-          {sortedCreators.length === 0 && (
-            <div className="px-6 py-8 text-center text-sm text-slate-500">
-              Nessun creator registrato
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          );
+        })}
+        {sortedCreators.length === 0 && (
+          <div className="px-6 py-8 text-center" style={{ color: '#334155', fontSize: 13 }}>
+            Nessun creator registrato
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
