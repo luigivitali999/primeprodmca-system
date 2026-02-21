@@ -54,6 +54,7 @@ import Leaks from './pages/Leaks';
 import Pipeline from './pages/Pipeline';
 import DMCARequests from './pages/DMCARequests';
 import Domains from './pages/Domains';
+import Reports from './pages/Reports';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +66,7 @@ export const PAGES = {
     "Pipeline": Pipeline,
     "DMCARequests": DMCARequests,
     "Domains": Domains,
+    "Reports": Reports,
 }
 
 export const pagesConfig = {
