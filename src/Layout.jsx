@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   Shield,
+  ShieldCheck,
   Bell,
   ChevronDown
 } from 'lucide-react';
@@ -62,6 +63,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'DMCA Pipeline', page: 'Pipeline', icon: Kanban },
     { name: 'Richieste DMCA', page: 'DMCARequests', icon: FileText },
     { name: 'Domini', page: 'Domains', icon: Globe },
+    { name: 'Whitelist', page: 'Whitelist', icon: ShieldCheck },
     { name: 'Report', page: 'Reports', icon: BarChart3 },
   ];
 
