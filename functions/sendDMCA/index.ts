@@ -169,7 +169,17 @@ Deno.serve(async (req) => {
       },
     };
 
-    // Attach selfie with document if available
+    // Build attachments array
+    const attachments: any[] = [];
+
+    // 1. Formal DMCA notice as PDF
+    const pdfBase64 = buildDMCAPdf({ creatorName, leakUrl, domain, sentToEntity, abuseEmail, noticeNumber });
+    attachments.push({
+      content: pdfBase64,
+      name: `DMCA_Notice_${noticeNumber}.pdf`,
+    });
+
+    // 2. Selfie with identity document
     if (docSelfieUrl) {
       try {
         const imgRes = await fetch(docSelfieUrl);
@@ -178,14 +188,18 @@ Deno.serve(async (req) => {
           const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
           const contentType = imgRes.headers.get("content-type") || "image/jpeg";
           const ext = contentType.includes("png") ? "png" : "jpg";
-          emailPayload.attachment = [{
+          attachments.push({
             content: base64,
             name: `identity_proof_${creatorSlug}.${ext}`,
-          }];
+          });
         }
       } catch (_) {
-        // selfie fetch failed, send without attachment
+        // selfie fetch failed, continue without it
       }
+    }
+
+    if (attachments.length > 0) {
+      emailPayload.attachment = attachments;
     }
 
     // Send via Brevo API
