@@ -32,21 +32,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { T } from '@/components/utils/theme';
 
 const COLUMNS = [
-  { id: 'found', label: 'Trovati', color: 'bg-red-500' },
-  { id: 'notice_sent', label: 'Notice Inviata', color: 'bg-amber-500' },
-  { id: 'waiting', label: 'In Attesa', color: 'bg-blue-500' },
-  { id: 'follow_up', label: 'Follow-up', color: 'bg-purple-500' },
-  { id: 'escalated', label: 'Escalation', color: 'bg-pink-500' },
-  { id: 'removed', label: 'Rimossi', color: 'bg-emerald-500' },
+  { id: 'found',       label: 'Trovati',       dot: '#f87171' },
+  { id: 'notice_sent', label: 'Notice Inviata', dot: '#fbbf24' },
+  { id: 'waiting',     label: 'In Attesa',      dot: '#60a5fa' },
+  { id: 'follow_up',   label: 'Follow-up',      dot: '#a78bfa' },
+  { id: 'escalated',   label: 'Escalation',     dot: '#f472b6' },
+  { id: 'removed',     label: 'Rimossi',        dot: '#34d399' },
 ];
 
-const SEVERITY_COLORS = {
-  critical: 'border-l-red-500',
-  high: 'border-l-amber-500',
-  medium: 'border-l-yellow-500',
-  low: 'border-l-slate-400',
+const SEVERITY_BORDER = {
+  critical: '#f87171', high: '#fbbf24', medium: '#eab308', low: '#64748b',
 };
 
 export default function Pipeline() {
