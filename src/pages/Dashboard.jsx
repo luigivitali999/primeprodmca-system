@@ -42,6 +42,7 @@ export default function Dashboard() {
   });
 
   const isLoading = leaksLoading || creatorsLoading || domainsLoading || dmcaLoading;
+  const domains = domainsFetch;
 
   // Calculate stats
   const activeLeaks = leaks.filter(l => l.status !== 'removed' && l.status !== 'rejected');
