@@ -51,12 +51,12 @@ import CreatorDetail from './pages/CreatorDetail';
 import Creators from './pages/Creators';
 import DMCARequests from './pages/DMCARequests';
 import Dashboard from './pages/Dashboard';
+import DirectOrders from './pages/DirectOrders';
 import Domains from './pages/Domains';
 import Leaks from './pages/Leaks';
 import Pipeline from './pages/Pipeline';
 import Reports from './pages/Reports';
 import Whitelist from './pages/Whitelist';
-import DirectOrders from './pages/DirectOrders';
 import __Layout from './Layout.jsx';
 
 
@@ -65,12 +65,12 @@ export const PAGES = {
     "Creators": Creators,
     "DMCARequests": DMCARequests,
     "Dashboard": Dashboard,
+    "DirectOrders": DirectOrders,
     "Domains": Domains,
     "Leaks": Leaks,
     "Pipeline": Pipeline,
     "Reports": Reports,
     "Whitelist": Whitelist,
-    "DirectOrders": DirectOrders,
 }
 
 export const pagesConfig = {

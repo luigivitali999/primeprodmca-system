@@ -49,6 +49,7 @@ import {
   Legend
 } from 'recharts';
 import StatsCard from '@/components/dashboard/StatsCard';
+import { T, cardStyle } from '@/components/utils/theme';
 
 const SEVERITY_COLORS = {
   critical: '#ef4444',
