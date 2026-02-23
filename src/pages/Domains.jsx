@@ -373,6 +373,12 @@ export default function Domains() {
                 <Label style={{ color: T.textMuted, fontSize: 12 }}>Email Abuse</Label>
                 <Input type="email" value={formData.abuse_email} onChange={(e) => setFormData({ ...formData, abuse_email: e.target.value })}
                   style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
+                {formData.domain_name && !formData.abuse_email && (
+                  <AbuseEmailLookup
+                    domain={formData.domain_name}
+                    onFound={(email) => setFormData(f => ({ ...f, abuse_email: email }))}
+                  />
+                )}
               </div>
               <div className="space-y-2">
                 <Label style={{ color: T.textMuted, fontSize: 12 }}>Contatto DMCA</Label>
