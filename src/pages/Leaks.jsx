@@ -351,8 +351,10 @@ export default function Leaks() {
                           <DropdownMenuItem onClick={() => handleEdit(leak)}>
                             <Edit className="w-4 h-4 mr-2" />Modifica
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                             <SendDMCAButton leak={leak} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['leaks'] })} label="Invia DMCA" size="sm" />
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="p-0">
+                            <div className="px-2 py-1 w-full">
+                              <SendDMCAButton leak={leak} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['leaks'] })} label="Invia DMCA" size="sm" />
+                            </div>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => deleteMutation.mutate(leak.id)} className="text-red-400">
