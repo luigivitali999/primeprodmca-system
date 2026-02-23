@@ -43,9 +43,34 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
       }
 
       if (!abuseEmail) {
-        setError('Email abuse non trovata per questo dominio. Aggiungila in Domain Intelligence.');
-        setLoading(false);
-        return;
+        // Try to discover it automatically via AI
+        try {
+          const result = await base44.integrations.Core.InvokeLLM({
+            prompt: `Find the official abuse/DMCA contact email address for the domain: "${leak.domain}". Search WHOIS records and hosting provider abuse contacts. Return ONLY the most relevant email address.`,
+            add_context_from_internet: true,
+            response_json_schema: {
+              type: 'object',
+              properties: {
+                abuse_email: { type: 'string' },
+              },
+            },
+          });
+          abuseEmail = result?.abuse_email || null;
+
+          // Save discovered email back to DomainIntelligence
+          if (abuseEmail && abuseEmail.includes('@')) {
+            const domainEntries = await base44.entities.DomainIntelligence.filter({ domain_name: leak.domain });
+            if (domainEntries[0]) {
+              await base44.entities.DomainIntelligence.update(domainEntries[0].id, { abuse_email: abuseEmail });
+            }
+          }
+        } catch (_) {}
+
+        if (!abuseEmail) {
+          setError('Email abuse non trovata automaticamente. Aggiungila in Domain Intelligence.');
+          setLoading(false);
+          return;
+        }
       }
 
       // 3. Generate notice number and create/get DMCARequest
