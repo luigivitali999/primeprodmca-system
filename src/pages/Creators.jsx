@@ -60,8 +60,14 @@ export default function Creators() {
     stage_name: '',
     email: '',
     monthly_revenue: '',
+    creator_tier: 'medium',
+    content_value: '',
     status: 'active',
     notes: '',
+    doc_front_url: '',
+    doc_back_url: '',
+    doc_selfie_url: '',
+    doc_verified: false,
   });
 
   const queryClient = useQueryClient();
