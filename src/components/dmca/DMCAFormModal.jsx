@@ -75,6 +75,7 @@ export default function DMCAFormModal({ open, onOpenChange, leak, formUrl, notic
           status: 'sent',
           method: 'form',
           sent_date: today,
+          notes: notes || undefined,
           follow_up_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         });
       }
@@ -82,6 +83,7 @@ export default function DMCAFormModal({ open, onOpenChange, leak, formUrl, notic
         await base44.entities.Leak.update(leak.id, {
           status: 'notice_sent',
           first_notice_date: today,
+          notes: leak.notes ? `${leak.notes}\n---\nForm submission: ${notes}` : `Form submission: ${notes}`,
         });
       }
       setMarked(true);
