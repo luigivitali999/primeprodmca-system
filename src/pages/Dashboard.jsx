@@ -53,6 +53,11 @@ export default function Dashboard() {
     ? Math.round(removedLeaks.reduce((acc, l) => acc + (l.days_online || 0), 0) / removedLeaks.length)
     : 0;
 
+  const { data: domains = [] } = useQuery({
+    queryKey: ['domains'],
+    queryFn: () => base44.entities.DomainIntelligence.list('-total_leaks', 100),
+  });
+
   if (isLoading) {
     return (
       <div className="space-y-6">
