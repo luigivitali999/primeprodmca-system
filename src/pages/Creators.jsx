@@ -141,8 +141,14 @@ export default function Creators() {
       stage_name: creator.stage_name || '',
       email: creator.email || '',
       monthly_revenue: creator.monthly_revenue?.toString() || '',
+      creator_tier: creator.creator_tier || 'medium',
+      content_value: creator.content_value?.toString() || '',
       status: creator.status || 'active',
       notes: creator.notes || '',
+      doc_front_url: creator.doc_front_url || '',
+      doc_back_url: creator.doc_back_url || '',
+      doc_selfie_url: creator.doc_selfie_url || '',
+      doc_verified: creator.doc_verified || false,
     });
     setIsDialogOpen(true);
   };
