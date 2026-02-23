@@ -54,10 +54,10 @@ import Dashboard from './pages/Dashboard';
 import DirectOrders from './pages/DirectOrders';
 import Domains from './pages/Domains';
 import Leaks from './pages/Leaks';
+import PendingApprovals from './pages/PendingApprovals';
 import Pipeline from './pages/Pipeline';
 import Reports from './pages/Reports';
 import Whitelist from './pages/Whitelist';
-import PendingApprovals from './pages/PendingApprovals';
 import __Layout from './Layout.jsx';
 
 
@@ -69,10 +69,10 @@ export const PAGES = {
     "DirectOrders": DirectOrders,
     "Domains": Domains,
     "Leaks": Leaks,
+    "PendingApprovals": PendingApprovals,
     "Pipeline": Pipeline,
     "Reports": Reports,
     "Whitelist": Whitelist,
-    "PendingApprovals": PendingApprovals,
 }
 
 export const pagesConfig = {
