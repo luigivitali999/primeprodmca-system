@@ -385,7 +385,7 @@ export default function Whitelist() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle style={{ color: T.text }}>
               {editingEntry ? 'Modifica Autorizzazione' : 'Nuovo Sito Autorizzato'}
             </DialogTitle>
           </DialogHeader>
