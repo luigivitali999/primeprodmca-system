@@ -125,6 +125,7 @@ export default function Creators() {
     const data = {
       ...formData,
       monthly_revenue: formData.monthly_revenue ? parseFloat(formData.monthly_revenue) : 0,
+      content_value: formData.content_value ? parseFloat(formData.content_value) : null,
     };
 
     if (editingCreator) {
