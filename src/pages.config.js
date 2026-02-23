@@ -58,6 +58,7 @@ import PendingApprovals from './pages/PendingApprovals';
 import Pipeline from './pages/Pipeline';
 import Reports from './pages/Reports';
 import Whitelist from './pages/Whitelist';
+import SocialProtection from './pages/SocialProtection';
 import __Layout from './Layout.jsx';
 
 
@@ -73,6 +74,7 @@ export const PAGES = {
     "Pipeline": Pipeline,
     "Reports": Reports,
     "Whitelist": Whitelist,
+    "SocialProtection": SocialProtection,
 }
 
 export const pagesConfig = {
