@@ -88,14 +88,30 @@ export function riskLevel(score) {
   return 'low';
 }
 
-// Economic Impact Engine
+// Economic Impact Engine - Perdita Stimata Totale
 export function calcEstimatedLoss(leaks = [], creator = {}, domains = []) {
   const vmc = creator.content_value || VMC_TIER[creator.creator_tier] || VMC_TIER.medium;
-  return leaks.reduce((total, leak) => {
+  
+  // A) Perdita Diretta: Numero contenuti × VMC × Fattore dominio × Tempo online
+  const directLoss = leaks.reduce((total, leak) => {
     const domain = domains.find(d => d.domain_name === leak.domain);
     const fdd = domain?.diffusion_factor || 1.0;
     const daysOnline = leak.days_online || 1;
     const iit = 1 + (daysOnline / 30) * 0.15;
     return total + (vmc * fdd * iit);
   }, 0);
+  
+  // B) Perdita Opportunità: ltv_mean_fan × conversion_loss_factor (se valorizzato)
+  let opportunityLoss = 0;
+  if (creator.ltv_mean_fan && creator.ltv_mean_fan > 0) {
+    const avgConversionFactor = leaks.length > 0
+      ? leaks.reduce((sum, leak) => {
+          const domain = domains.find(d => d.domain_name === leak.domain);
+          return sum + (domain?.conversion_loss_factor || 1.0);
+        }, 0) / leaks.length
+      : 1.0;
+    opportunityLoss = creator.ltv_mean_fan * avgConversionFactor;
+  }
+  
+  return directLoss + opportunityLoss;
 }
