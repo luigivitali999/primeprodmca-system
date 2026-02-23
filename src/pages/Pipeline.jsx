@@ -247,6 +247,11 @@ export default function Pipeline() {
                                       Score {Math.round(leak.damage_score)}
                                     </div>
                                   )}
+                                  {leak.status === 'found' && (
+                                    <div className="mt-2">
+                                      <SendDMCAButton leak={leak} onSuccess={() => queryClient.invalidateQueries({ queryKey: ['leaks'] })} />
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )}
