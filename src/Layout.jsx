@@ -62,6 +62,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Richieste DMCA', page: 'DMCARequests', icon: FileText },
     { name: 'Domini', page: 'Domains', icon: Globe },
     { name: 'Whitelist', page: 'Whitelist', icon: ShieldCheck },
+    { name: 'Ordini Diretti', page: 'DirectOrders', icon: Zap },
     { name: 'Report', page: 'Reports', icon: BarChart3 },
   ];
 
