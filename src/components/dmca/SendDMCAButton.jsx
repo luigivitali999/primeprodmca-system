@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Send, Loader2, FileText } from 'lucide-react';
+import { Send, Loader2, FileText, CheckCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import DMCAFormModal from '@/components/dmca/DMCAFormModal';
 
@@ -14,6 +14,7 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(null);
   const [formModal, setFormModal] = useState(null); // { formUrl, noticeNumber, activeDmcaId }
+  const [preferredMethod, setPreferredMethod] = useState(null);
 
   const handleSend = async (e) => {
     e.stopPropagation();
