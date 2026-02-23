@@ -273,195 +273,129 @@ export default function Reports() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Domains */}
-        <Card className="bg-white border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Top 10 Domini per Leak
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topDomains} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
-                  <YAxis 
-                    dataKey="domain" 
-                    type="category" 
-                    width={120}
-                    tick={{ fontSize: 10, fill: '#64748b' }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1e293b', 
-                      border: 'none', 
-                      borderRadius: '8px',
-                      color: 'white'
-                    }}
-                  />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div style={cardStyle}>
+          <div className="flex items-center gap-2 mb-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.1)', paddingBottom: 12 }}>
+            <BarChart3 className="w-4 h-4" style={{ color: T.indigoSoft }} />
+            <span className="text-sm font-semibold" style={{ color: T.text }}>Top 10 Domini per Leak</span>
+          </div>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={topDomains} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(99,102,241,0.1)" />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
+                <YAxis dataKey="domain" type="category" width={120} tick={{ fontSize: 10, fill: '#64748b' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8, color: 'white' }} />
+                <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* Severity Distribution */}
-        <Card className="bg-white border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <PieChart className="w-4 h-4" />
-              Distribuzione per Severità
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <RePieChart>
-                  <Pie
-                    data={severityData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={2}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {severityData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1e293b', 
-                      border: 'none', 
-                      borderRadius: '8px',
-                      color: 'white'
-                    }}
-                  />
-                  <Legend />
-                </RePieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div style={cardStyle}>
+          <div className="flex items-center gap-2 mb-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.1)', paddingBottom: 12 }}>
+            <PieChart className="w-4 h-4" style={{ color: T.indigoSoft }} />
+            <span className="text-sm font-semibold" style={{ color: T.text }}>Distribuzione per Severità</span>
+          </div>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <RePieChart>
+                <Pie data={severityData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={2} dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                  {severityData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                </Pie>
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 8, color: 'white' }} />
+                <Legend formatter={(value) => <span style={{ color: T.textMuted, fontSize: 12 }}>{value}</span>} />
+              </RePieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       {/* Creator Performance Table */}
-      <Card className="bg-white border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base">Performance per Creator</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50">
-                  <TableHead>Creator</TableHead>
-                  <TableHead className="text-center">Leak Totali</TableHead>
-                  <TableHead className="text-center">Attivi</TableHead>
-                  <TableHead className="text-center">Rimossi</TableHead>
-                  <TableHead>Tasso Rimozione</TableHead>
-                  <TableHead className="text-center">Danno Score</TableHead>
-                  <TableHead className="text-center">Mitigato</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {creatorReportData.slice(0, 15).map((creator) => (
-                  <TableRow key={creator.id}>
-                    <TableCell className="font-medium text-slate-900">{creator.name}</TableCell>
-                    <TableCell className="text-center">{creator.totalLeaks}</TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                        {creator.activeLeaks}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                        {creator.removedLeaks}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="w-24">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-semibold">{creator.removalRate}%</span>
-                        </div>
-                        <Progress value={creator.removalRate} className="h-1.5" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center font-semibold">{Math.round(creator.damageScore)}</TableCell>
-                    <TableCell className="text-center text-emerald-600 font-semibold">
-                      {Math.round(creator.mitigatedDamage)}
-                    </TableCell>
-                  </TableRow>
+      <div style={{ ...cardStyle, overflow: 'hidden', padding: 0 }}>
+        <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.1)' }}>
+          <span className="text-sm font-semibold" style={{ color: T.text }}>Performance per Creator</span>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+                {['Creator', 'Leak Totali', 'Attivi', 'Rimossi', 'Tasso Rimozione', 'Danno Score', 'Mitigato'].map(h => (
+                  <TableHead key={h} style={{ color: T.textMuted, fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', background: '#0a1120' }}>{h}</TableHead>
                 ))}
-              </TableBody>
-            </Table>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {creatorReportData.slice(0, 15).map((creator) => (
+                <TableRow key={creator.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.06)' }} className="hover:bg-white/[0.02] transition-colors">
+                  <TableCell className="font-medium" style={{ color: T.text }}>{creator.name}</TableCell>
+                  <TableCell style={{ color: T.text, textAlign: 'center' }}>{creator.totalLeaks}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
+                    <span style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171', padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                      {creator.activeLeaks}
+                    </span>
+                  </TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
+                    <span style={{ background: 'rgba(52,211,153,0.15)', color: '#34d399', padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                      {creator.removedLeaks}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="w-24">
+                      <p className="text-sm font-semibold mb-1" style={{ color: T.text }}>{creator.removalRate}%</p>
+                      <div style={{ height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+                        <div style={{ width: `${creator.removalRate}%`, height: '100%', background: 'linear-gradient(90deg,#6366f1,#10b981)', borderRadius: 2 }} />
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell style={{ textAlign: 'center', color: T.text, fontWeight: 600 }}>{Math.round(creator.damageScore)}</TableCell>
+                  <TableCell style={{ textAlign: 'center', color: '#34d399', fontWeight: 600 }}>{Math.round(creator.mitigatedDamage)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        {creatorReportData.length === 0 && (
+          <div className="text-center py-8" style={{ color: T.textMuted }}>
+            Nessun dato disponibile per il periodo selezionato
           </div>
-          {creatorReportData.length === 0 && (
-            <div className="text-center py-8 text-slate-500">
-              Nessun dato disponibile per il periodo selezionato
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* DMCA Statistics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Statistiche DMCA</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-              <span className="text-sm text-slate-600">DMCA Inviate</span>
-              <span className="text-lg font-bold text-slate-900">{filteredDMCA.length}</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-              <span className="text-sm text-slate-600">Rimozioni Confermate</span>
-              <span className="text-lg font-bold text-emerald-600">
-                {filteredDMCA.filter(d => d.removal_confirmed).length}
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-              <span className="text-sm text-slate-600">In Attesa</span>
-              <span className="text-lg font-bold text-amber-600">
-                {filteredDMCA.filter(d => !d.removal_confirmed && d.status !== 'rejected').length}
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-              <span className="text-sm text-slate-600">Escalation</span>
-              <span className="text-lg font-bold text-pink-600">
-                {filteredDMCA.filter(d => d.status === 'escalated').length}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        <div style={cardStyle}>
+          <p className="text-sm font-semibold mb-4" style={{ color: T.text, borderBottom: '1px solid rgba(99,102,241,0.1)', paddingBottom: 12 }}>Statistiche DMCA</p>
+          <div className="space-y-3">
+            {[
+              { label: 'DMCA Inviate', value: filteredDMCA.length, color: T.text },
+              { label: 'Rimozioni Confermate', value: filteredDMCA.filter(d => d.removal_confirmed).length, color: '#34d399' },
+              { label: 'In Attesa', value: filteredDMCA.filter(d => !d.removal_confirmed && d.status !== 'rejected').length, color: '#fbbf24' },
+              { label: 'Escalation', value: filteredDMCA.filter(d => d.status === 'escalated').length, color: '#f472b6' },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="flex items-center justify-between p-3 rounded-lg" style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.1)' }}>
+                <span className="text-sm" style={{ color: T.textMuted }}>{label}</span>
+                <span className="text-lg font-bold" style={{ color }}>{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <Card className="bg-white border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base">Distribuzione Contenuti</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {contentTypeChartData.map((item) => (
-                <div key={item.name} className="flex items-center gap-3">
-                  <span className="text-sm text-slate-600 w-24 capitalize">{item.name}</span>
-                  <div className="flex-1">
-                    <Progress 
-                      value={filteredLeaks.length > 0 ? (item.value / filteredLeaks.length) * 100 : 0} 
-                      className="h-2"
-                    />
-                  </div>
-                  <span className="text-sm font-medium text-slate-900 w-12 text-right">{item.value}</span>
+        <div style={cardStyle}>
+          <p className="text-sm font-semibold mb-4" style={{ color: T.text, borderBottom: '1px solid rgba(99,102,241,0.1)', paddingBottom: 12 }}>Distribuzione Contenuti</p>
+          <div className="space-y-3">
+            {contentTypeChartData.map((item) => (
+              <div key={item.name} className="flex items-center gap-3">
+                <span className="text-sm capitalize w-24" style={{ color: T.textMuted }}>{item.name}</span>
+                <div className="flex-1" style={{ height: 6, background: 'rgba(255,255,255,0.05)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${filteredLeaks.length > 0 ? (item.value / filteredLeaks.length) * 100 : 0}%`, height: '100%', background: 'linear-gradient(90deg,#6366f1,#3b82f6)', borderRadius: 3 }} />
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <span className="text-sm font-medium w-8 text-right" style={{ color: T.text }}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
