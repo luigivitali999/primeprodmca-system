@@ -263,7 +263,7 @@ export default function Whitelist() {
           <Table>
             <TableHeader>
               <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
-                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Dominio / Piattaforma
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Dominio / Piattaforma</TableHead>
                 <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Creator</TableHead>
                 <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Scope</TableHead>
                 <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Contenuti</TableHead>
