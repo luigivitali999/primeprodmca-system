@@ -440,15 +440,15 @@ export default function Whitelist() {
 
             {formData.scope === 'creator_specific' && (
               <div className="space-y-2">
-                <Label>Creator *</Label>
+                <Label style={{ color: T.text }}>Creator *</Label>
                 <Select
                   value={formData.creator_id}
                   onValueChange={(value) => setFormData({ ...formData, creator_id: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
                     <SelectValue placeholder="Seleziona creator" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                     {creators.map(c => (
                       <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
                     ))}
