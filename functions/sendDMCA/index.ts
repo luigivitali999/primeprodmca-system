@@ -82,6 +82,39 @@ Deno.serve(async (req) => {
 
     const emailBody = buildDMCAEmail({ creatorName, leakUrl, domain, sentToEntity, abuseEmail, noticeNumber });
 
+    // Build email payload
+    const emailPayload: any = {
+      sender: { name: FROM_NAME, email: FROM_EMAIL },
+      to: [{ email: abuseEmail, name: `Abuse @ ${domain}` }],
+      replyTo: { email: FROM_EMAIL },
+      subject: `DMCA Takedown Notice – ${noticeNumber} – ${domain}`,
+      textContent: emailBody,
+      headers: {
+        "X-PRIME-Notice": noticeNumber,
+        "X-Creator-ID": creatorId || "",
+        "X-Leak-ID": leakId || "",
+      },
+    };
+
+    // Attach selfie with document if available
+    if (docSelfieUrl) {
+      try {
+        const imgRes = await fetch(docSelfieUrl);
+        if (imgRes.ok) {
+          const arrayBuffer = await imgRes.arrayBuffer();
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+          const contentType = imgRes.headers.get("content-type") || "image/jpeg";
+          const ext = contentType.includes("png") ? "png" : "jpg";
+          emailPayload.attachment = [{
+            content: base64,
+            name: `identity_proof_${creatorSlug}.${ext}`,
+          }];
+        }
+      } catch (_) {
+        // selfie fetch failed, send without attachment
+      }
+    }
+
     // Send via Brevo API
     const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
@@ -90,18 +123,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
         "Accept": "application/json",
       },
-      body: JSON.stringify({
-        sender: { name: FROM_NAME, email: FROM_EMAIL },
-        to: [{ email: abuseEmail, name: `Abuse @ ${domain}` }],
-        replyTo: { email: FROM_EMAIL },
-        subject: `DMCA Takedown Notice – ${noticeNumber} – ${domain}`,
-        textContent: emailBody,
-        headers: {
-          "X-PRIME-Notice": noticeNumber,
-          "X-Creator-ID": creatorId || "",
-          "X-Leak-ID": leakId || "",
-        },
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
     if (!brevoRes.ok) {
