@@ -47,10 +47,10 @@ export const STATUS_DARK = {
 
 // VMC by tier
 export const VMC_TIER = {
-  low: 15,
-  medium: 40,
-  high: 100,
-  vip: 250,
+  low: 12,
+  medium: 25,
+  high: 60,
+  vip: 130,
 };
 
 // Risk Score 2.0 calculation
