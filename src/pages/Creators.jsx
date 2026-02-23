@@ -346,79 +346,103 @@ export default function Creators() {
 
       {/* Creator Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)', color: T.text, maxHeight: '90vh', overflowY: 'auto' }} className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle style={{ color: T.text }}>
               {editingCreator ? 'Modifica Creator' : 'Nuovo Creator'}
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Base info */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Nome Legale *</Label>
-                <Input
-                  value={formData.legal_name}
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Nome Legale *</Label>
+                <Input value={formData.legal_name}
                   onChange={(e) => setFormData({ ...formData, legal_name: e.target.value })}
-                  required
-                />
+                  required style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Stage Name *</Label>
-                <Input
-                  value={formData.stage_name}
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Stage Name *</Label>
+                <Input value={formData.stage_name}
                   onChange={(e) => setFormData({ ...formData, stage_name: e.target.value })}
-                  required
-                />
+                  required style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Email *</Label>
-                <Input
-                  type="email"
-                  value={formData.email}
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Email *</Label>
+                <Input type="email" value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
+                  required style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Revenue Mensile (€)</Label>
-                <Input
-                  type="number"
-                  value={formData.monthly_revenue}
-                  onChange={(e) => setFormData({ ...formData, monthly_revenue: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Stato</Label>
+                <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <SelectItem value="active">Attivo</SelectItem>
+                    <SelectItem value="inactive">Inattivo</SelectItem>
+                    <SelectItem value="paused">In pausa</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Stato</Label>
-              <Select 
-                value={formData.status} 
-                onValueChange={(value) => setFormData({ ...formData, status: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Attivo</SelectItem>
-                  <SelectItem value="inactive">Inattivo</SelectItem>
-                  <SelectItem value="paused">In pausa</SelectItem>
-                </SelectContent>
-              </Select>
+
+            {/* Economic tier */}
+            <div style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, padding: '14px' }} className="space-y-3">
+              <p style={{ color: T.indigoSoft, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>📊 Parametri Economic Impact Engine</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label style={{ color: T.textMuted, fontSize: 12 }}>Tier Creator</Label>
+                  <Select value={formData.creator_tier} onValueChange={(v) => setFormData({ ...formData, creator_tier: v })}>
+                    <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                      <SelectItem value="low">Basso (VMC €{VMC_TIER.low})</SelectItem>
+                      <SelectItem value="medium">Medio (VMC €{VMC_TIER.medium})</SelectItem>
+                      <SelectItem value="high">Alto (VMC €{VMC_TIER.high})</SelectItem>
+                      <SelectItem value="vip">VIP (VMC €{VMC_TIER.vip})</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label style={{ color: T.textMuted, fontSize: 12 }}>Valore Personalizzato (€)</Label>
+                  <Input type="number" value={formData.content_value}
+                    onChange={(e) => setFormData({ ...formData, content_value: e.target.value })}
+                    placeholder="Sovrascrive il tier"
+                    style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
+                </div>
+              </div>
             </div>
+
+            {/* Documents */}
+            <div style={{ background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.15)', borderRadius: 8, padding: '14px' }} className="space-y-3">
+              <p style={{ color: '#34d399', fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>🪪 Documenti Identità (obbligatori per DMCA)</p>
+              <DocUploadField label="Documento Fronte" value={formData.doc_front_url}
+                onChange={(url) => setFormData({ ...formData, doc_front_url: url })} required />
+              <DocUploadField label="Documento Retro" value={formData.doc_back_url}
+                onChange={(url) => setFormData({ ...formData, doc_back_url: url })} required />
+              <DocUploadField label="Selfie con Documento" value={formData.doc_selfie_url}
+                onChange={(url) => setFormData({ ...formData, doc_selfie_url: url })} required />
+            </div>
+
             <div className="space-y-2">
-              <Label>Note</Label>
-              <Textarea
-                value={formData.notes}
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Note</Label>
+              <Textarea value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows={3}
-              />
+                rows={2}
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
             </div>
-            <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}
+                style={{ borderColor: 'rgba(99,102,241,0.3)', color: T.textMuted, background: 'transparent' }}>
                 Annulla
               </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
                 {editingCreator ? 'Salva Modifiche' : 'Crea Creator'}
               </Button>
             </div>
