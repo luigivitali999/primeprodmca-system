@@ -126,6 +126,9 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Economic Loss Chart */}
+      <EconomicLossTimeline leaks={leaks} creators={creators} domains={domains} />
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <LeaksTimeline leaks={leaks} />
