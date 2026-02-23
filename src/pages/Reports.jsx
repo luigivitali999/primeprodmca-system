@@ -189,10 +189,10 @@ export default function Reports() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-8 w-48" style={{ background: 'rgba(99,102,241,0.1)' }} />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
+            <Skeleton key={i} className="h-28 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)' }} />
           ))}
         </div>
       </div>
@@ -204,16 +204,16 @@ export default function Reports() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Report & Analytics</h1>
-          <p className="text-slate-500 mt-1">Analisi performance DMCA</p>
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>Report & Analytics</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>Analisi performance DMCA</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
               <Calendar className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
               <SelectItem value="7">Ultimi 7 giorni</SelectItem>
               <SelectItem value="30">Ultimi 30 giorni</SelectItem>
               <SelectItem value="90">Ultimi 90 giorni</SelectItem>
@@ -221,18 +221,18 @@ export default function Reports() {
             </SelectContent>
           </Select>
           <Select value={selectedCreator} onValueChange={setSelectedCreator}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-48" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
               <Users className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
               <SelectItem value="all">Tutti i creator</SelectItem>
               {creators.map(c => (
                 <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={generateReport} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={generateReport} style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
             <Download className="w-4 h-4 mr-2" />
             Esporta Report
           </Button>
