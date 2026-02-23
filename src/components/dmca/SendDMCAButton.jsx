@@ -142,7 +142,7 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
     return (
       <Button size={size} disabled
         style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
-        <Send className="w-3.5 h-3.5 mr-1" />Inviata ✓
+        <CheckCircle className="w-3.5 h-3.5 mr-1" />Inviata ✓
       </Button>
     );
   }
@@ -151,7 +151,13 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
     <>
       <Button size={size} onClick={handleSend} disabled={loading}
         style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc' }}>
-        {loading ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Send className="w-3.5 h-3.5 mr-1" />}
+        {loading ? (
+          <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+        ) : preferredMethod === 'form' ? (
+          <FileText className="w-3.5 h-3.5 mr-1" />
+        ) : (
+          <Send className="w-3.5 h-3.5 mr-1" />
+        )}
         {loading ? 'Caricamento...' : label}
       </Button>
 
