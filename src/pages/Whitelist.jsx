@@ -392,22 +392,24 @@ export default function Whitelist() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Dominio *</Label>
-                <Input
-                  value={formData.domain}
-                  onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                  placeholder="example.com"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Nome Piattaforma</Label>
-                <Input
-                  value={formData.platform_name}
-                  onChange={(e) => setFormData({ ...formData, platform_name: e.target.value })}
-                  placeholder="OnlyFans, Patreon..."
-                />
-              </div>
+                 <Label style={{ color: T.text }}>Dominio *</Label>
+                 <Input
+                   value={formData.domain}
+                   onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+                   placeholder="example.com"
+                   required
+                   style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
+                 />
+               </div>
+               <div className="space-y-2">
+                 <Label style={{ color: T.text }}>Nome Piattaforma</Label>
+                 <Input
+                   value={formData.platform_name}
+                   onChange={(e) => setFormData({ ...formData, platform_name: e.target.value })}
+                   placeholder="OnlyFans, Patreon..."
+                   style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
+                 />
+               </div>
             </div>
 
             <div className="space-y-2">
