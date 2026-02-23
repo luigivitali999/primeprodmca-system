@@ -221,10 +221,10 @@ export default function DMCARequests() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-10 w-40" />
+          <Skeleton className="h-8 w-48" style={{ background: 'rgba(99,102,241,0.1)' }} />
+          <Skeleton className="h-10 w-40" style={{ background: 'rgba(99,102,241,0.1)' }} />
         </div>
-        <Skeleton className="h-96 rounded-xl" />
+        <Skeleton className="h-96 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)' }} />
       </div>
     );
   }
@@ -234,34 +234,28 @@ export default function DMCARequests() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Richieste DMCA</h1>
-          <p className="text-slate-500 mt-1">{requests.length} richieste totali</p>
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>Richieste DMCA</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>{requests.length} richieste totali</p>
         </div>
-        <Button 
-          onClick={() => { resetForm(); setIsDialogOpen(true); }}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nuova DMCA
+        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}
+          style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
+          <Plus className="w-4 h-4 mr-2" />Nuova DMCA
         </Button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            placeholder="Cerca per numero, destinatario o creator..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: T.textMuted }} />
+          <Input placeholder="Cerca per numero, destinatario o creator..." value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} className="pl-10"
+            style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Stato" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti gli stati</SelectItem>
             {Object.entries(STATUS_LABELS).map(([value, label]) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
@@ -271,243 +265,173 @@ export default function DMCARequests() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border-0 shadow-sm">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50">
-                  <TableHead>Notice #</TableHead>
-                  <TableHead>Creator</TableHead>
-                  <TableHead>Destinatario</TableHead>
-                  <TableHead>Metodo</TableHead>
-                  <TableHead>Data Invio</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead>Follow-up</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRequests.map((request) => (
-                  <TableRow key={request.id} className="hover:bg-slate-50">
-                    <TableCell className="font-mono text-sm font-medium">
+      <div style={{ ...cardStyle, overflow: 'hidden' }}>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+                {['Notice #', 'Creator', 'Destinatario', 'Metodo', 'Data Invio', 'Stato', 'Follow-up', ''].map(h => (
+                  <TableHead key={h} style={{ color: T.textMuted, fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', background: '#0a1120' }}>{h}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRequests.map((request) => {
+                const st = STATUS_DARK[request.status] || STATUS_DARK.pending;
+                return (
+                  <TableRow key={request.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.06)' }} className="hover:bg-white/[0.02] transition-colors">
+                    <TableCell className="font-mono text-sm font-medium" style={{ color: T.indigoSoft }}>
                       {request.notice_number || 'N/D'}
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-slate-900">
-                      {request.creator_name || 'N/D'}
-                    </TableCell>
+                    <TableCell style={{ color: T.text, fontSize: 14 }}>{request.creator_name || 'N/D'}</TableCell>
                     <TableCell>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900">{request.sent_to_entity || 'N/D'}</p>
-                        <p className="text-xs text-slate-500 capitalize">{request.sent_to_type}</p>
-                      </div>
+                      <p className="text-sm font-medium" style={{ color: T.text }}>{request.sent_to_entity || 'N/D'}</p>
+                      <p className="text-xs capitalize" style={{ color: T.textMuted }}>{request.sent_to_type}</p>
                     </TableCell>
-                    <TableCell className="text-sm capitalize text-slate-600">
-                      {request.method || 'N/D'}
-                    </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell style={{ color: T.textMuted, fontSize: 13, textTransform: 'capitalize' }}>{request.method || 'N/D'}</TableCell>
+                    <TableCell style={{ color: T.textMuted, fontSize: 13 }}>
                       {request.sent_date ? format(new Date(request.sent_date), 'dd/MM/yy') : 'N/D'}
                     </TableCell>
                     <TableCell>
-                      <Badge className={`text-xs ${STATUS_COLORS[request.status] || 'bg-slate-100'}`}>
-                        {STATUS_LABELS[request.status] || request.status}
-                      </Badge>
+                      <span style={{ background: st.bg, color: st.color, padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                        {st.label || request.status}
+                      </span>
                     </TableCell>
                     <TableCell>
                       {request.follow_up_date && !request.removal_confirmed && (
-                        <span className="text-xs text-slate-600 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {format(new Date(request.follow_up_date), 'dd/MM')}
+                        <span className="text-xs flex items-center gap-1" style={{ color: T.textMuted }}>
+                          <Clock className="w-3 h-3" />{format(new Date(request.follow_up_date), 'dd/MM')}
                         </span>
                       )}
                       {request.removal_confirmed && (
-                        <span className="text-xs text-emerald-600 flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3" />
-                          Rimosso
+                        <span className="text-xs flex items-center gap-1" style={{ color: '#34d399' }}>
+                          <CheckCircle className="w-3 h-3" />Rimosso
                         </span>
                       )}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/5">
+                            <MoreVertical className="w-4 h-4" style={{ color: T.textMuted }} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                           <DropdownMenuItem onClick={() => handleEdit(request)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Modifica
+                            <Edit className="w-4 h-4 mr-2" />Modifica
                           </DropdownMenuItem>
                           {!request.removal_confirmed && (
                             <DropdownMenuItem onClick={() => confirmRemovalMutation.mutate(request)}>
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Conferma Rimozione
+                              <CheckCircle className="w-4 h-4 mr-2" />Conferma Rimozione
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={() => deleteMutation.mutate(request.id)}
-                            className="text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Elimina
+                          <DropdownMenuItem onClick={() => deleteMutation.mutate(request.id)} className="text-red-400">
+                            <Trash2 className="w-4 h-4 mr-2" />Elimina
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        {filteredRequests.length === 0 && (
+          <div className="text-center py-12">
+            <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: 'rgba(99,102,241,0.3)' }} />
+            <p style={{ color: T.textMuted }}>Nessuna richiesta DMCA trovata</p>
           </div>
-          {filteredRequests.length === 0 && (
-            <div className="text-center py-12 text-slate-500">
-              <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <p>Nessuna richiesta DMCA trovata</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* DMCA Request Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)', color: T.text, maxHeight: '90vh', overflowY: 'auto' }} className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle style={{ color: T.text }}>
               {editingRequest ? 'Modifica Richiesta DMCA' : 'Nuova Richiesta DMCA'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Leak *</Label>
-              <Select 
-                value={formData.leak_id} 
-                onValueChange={(value) => {
-                  const leak = leaks.find(l => l.id === value);
-                  setFormData({ 
-                    ...formData, 
-                    leak_id: value,
-                    creator_id: leak?.creator_id || formData.creator_id,
-                    sent_to_entity: leak?.hosting_provider || formData.sent_to_entity,
-                  });
-                }}
-              >
-                <SelectTrigger>
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Leak *</Label>
+              <Select value={formData.leak_id} onValueChange={(value) => {
+                const leak = leaks.find(l => l.id === value);
+                setFormData({ ...formData, leak_id: value, creator_id: leak?.creator_id || formData.creator_id, sent_to_entity: leak?.hosting_provider || formData.sent_to_entity });
+              }}>
+                <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
                   <SelectValue placeholder="Seleziona leak" />
                 </SelectTrigger>
-                <SelectContent>
-                  {availableLeaks.map(l => (
-                    <SelectItem key={l.id} value={l.id}>
-                      {l.domain} - {l.creator_name}
-                    </SelectItem>
-                  ))}
+                <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                  {availableLeaks.map(l => <SelectItem key={l.id} value={l.id}>{l.domain} - {l.creator_name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
-              <Label>Creator *</Label>
-              <Select 
-                value={formData.creator_id} 
-                onValueChange={(value) => setFormData({ ...formData, creator_id: value })}
-              >
-                <SelectTrigger>
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Creator *</Label>
+              <Select value={formData.creator_id} onValueChange={(value) => setFormData({ ...formData, creator_id: value })}>
+                <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
                   <SelectValue placeholder="Seleziona creator" />
                 </SelectTrigger>
-                <SelectContent>
-                  {creators.map(c => (
-                    <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
-                  ))}
+                <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                  {creators.map(c => <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Destinatario *</Label>
-                <Input
-                  value={formData.sent_to_entity}
-                  onChange={(e) => setFormData({ ...formData, sent_to_entity: e.target.value })}
-                  placeholder="Cloudflare, Namecheap..."
-                  required
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Destinatario *</Label>
+                <Input value={formData.sent_to_entity} onChange={(e) => setFormData({ ...formData, sent_to_entity: e.target.value })}
+                  placeholder="Cloudflare, Namecheap..." required
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Tipo Destinatario</Label>
-                <Select 
-                  value={formData.sent_to_type} 
-                  onValueChange={(value) => setFormData({ ...formData, sent_to_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="hosting">Hosting</SelectItem>
-                    <SelectItem value="registrar">Registrar</SelectItem>
-                    <SelectItem value="google">Google</SelectItem>
-                    <SelectItem value="cloudflare">Cloudflare</SelectItem>
-                    <SelectItem value="platform">Piattaforma</SelectItem>
-                    <SelectItem value="other">Altro</SelectItem>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Tipo Destinatario</Label>
+                <Select value={formData.sent_to_type} onValueChange={(value) => setFormData({ ...formData, sent_to_type: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <SelectItem value="hosting">Hosting</SelectItem><SelectItem value="registrar">Registrar</SelectItem>
+                    <SelectItem value="google">Google</SelectItem><SelectItem value="cloudflare">Cloudflare</SelectItem>
+                    <SelectItem value="platform">Piattaforma</SelectItem><SelectItem value="other">Altro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Metodo Invio</Label>
-                <Select 
-                  value={formData.method} 
-                  onValueChange={(value) => setFormData({ ...formData, method: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="form">Form Online</SelectItem>
-                    <SelectItem value="api">API</SelectItem>
-                    <SelectItem value="fax">Fax</SelectItem>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Metodo Invio</Label>
+                <Select value={formData.method} onValueChange={(value) => setFormData({ ...formData, method: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <SelectItem value="email">Email</SelectItem><SelectItem value="form">Form Online</SelectItem>
+                    <SelectItem value="api">API</SelectItem><SelectItem value="fax">Fax</SelectItem>
                     <SelectItem value="legal_letter">Lettera Legale</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Template</Label>
-                <Select 
-                  value={formData.template_used} 
-                  onValueChange={(value) => setFormData({ ...formData, template_used: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard_dmca">DMCA Standard</SelectItem>
-                    <SelectItem value="google_dmca">Google DMCA</SelectItem>
-                    <SelectItem value="cloudflare_abuse">Cloudflare Abuse</SelectItem>
-                    <SelectItem value="legal_notice">Diffida Legale</SelectItem>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Template</Label>
+                <Select value={formData.template_used} onValueChange={(value) => setFormData({ ...formData, template_used: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <SelectItem value="standard_dmca">DMCA Standard</SelectItem><SelectItem value="google_dmca">Google DMCA</SelectItem>
+                    <SelectItem value="cloudflare_abuse">Cloudflare Abuse</SelectItem><SelectItem value="legal_notice">Diffida Legale</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-
             <div className="space-y-2">
-              <Label>Note</Label>
-              <Textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows={2}
-              />
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Note</Label>
+              <Textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2}
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
             </div>
-
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Annulla
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                <Send className="w-4 h-4 mr-2" />
-                {editingRequest ? 'Salva Modifiche' : 'Invia DMCA'}
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}
+                style={{ borderColor: 'rgba(99,102,241,0.3)', color: T.textMuted, background: 'transparent' }}>Annulla</Button>
+              <Button type="submit" style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
+                <Send className="w-4 h-4 mr-2" />{editingRequest ? 'Salva Modifiche' : 'Invia DMCA'}
               </Button>
             </div>
           </form>
