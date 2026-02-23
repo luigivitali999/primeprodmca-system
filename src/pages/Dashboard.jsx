@@ -31,8 +31,8 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Creator.list('-created_date', 100),
   });
 
-  const { data: domains = [], isLoading: domainsLoading } = useQuery({
-    queryKey: ['domains'],
+  const { data: domainsFetch = [], isLoading: domainsLoading } = useQuery({
+    queryKey: ['domains-dashboard'],
     queryFn: () => base44.entities.DomainIntelligence.list('-total_leaks', 100),
   });
 
