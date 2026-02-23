@@ -224,10 +224,10 @@ export default function Leaks() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-10 w-36" />
+          <Skeleton className="h-8 w-32" style={{ background: 'rgba(99,102,241,0.1)' }} />
+          <Skeleton className="h-10 w-36" style={{ background: 'rgba(99,102,241,0.1)' }} />
         </div>
-        <Skeleton className="h-96 rounded-xl" />
+        <Skeleton className="h-96 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)' }} />
       </div>
     );
   }
@@ -237,13 +237,11 @@ export default function Leaks() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Leaks</h1>
-          <p className="text-slate-500 mt-1">{leaks.length} leak tracciati</p>
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>Leaks</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>{leaks.length} leak tracciati</p>
         </div>
-        <Button 
-          onClick={() => { resetForm(); setIsDialogOpen(true); }}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
+        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}
+          style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
           <Plus className="w-4 h-4 mr-2" />
           Nuovo Leak
         </Button>
@@ -252,30 +250,25 @@ export default function Leaks() {
       {/* Filters */}
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            placeholder="Cerca per URL, dominio o creator..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: T.textMuted }} />
+          <Input placeholder="Cerca per URL, dominio o creator..." value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} className="pl-10"
+            style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
         </div>
         <Select value={creatorFilter} onValueChange={setCreatorFilter}>
-          <SelectTrigger className="w-full lg:w-48">
+          <SelectTrigger className="w-full lg:w-48" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Creator" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti i creator</SelectItem>
-            {creators.map(c => (
-              <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
-            ))}
+            {creators.map(c => <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full lg:w-40">
+          <SelectTrigger className="w-full lg:w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Stato" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti gli stati</SelectItem>
             {Object.entries(STATUS_LABELS).map(([value, label]) => (
               <SelectItem key={value} value={value}>{label}</SelectItem>
@@ -283,10 +276,10 @@ export default function Leaks() {
           </SelectContent>
         </Select>
         <Select value={severityFilter} onValueChange={setSeverityFilter}>
-          <SelectTrigger className="w-full lg:w-40">
+          <SelectTrigger className="w-full lg:w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Severità" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutte</SelectItem>
             <SelectItem value="critical">Critica</SelectItem>
             <SelectItem value="high">Alta</SelectItem>
@@ -297,224 +290,160 @@ export default function Leaks() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border-0 shadow-sm">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50">
-                  <TableHead className="w-[250px]">URL / Dominio</TableHead>
-                  <TableHead>Creator</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Severità</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead>Scoperto</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredLeaks.slice(0, 100).map((leak) => (
-                  <TableRow key={leak.id} className="hover:bg-slate-50">
+      <div style={{ ...cardStyle, overflow: 'hidden' }}>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+                {['URL / Dominio', 'Creator', 'Tipo', 'Severità', 'Stato', 'Scoperto', 'Score', ''].map(h => (
+                  <TableHead key={h} style={{ color: T.textMuted, fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', background: '#0a1120' }}>{h}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredLeaks.slice(0, 100).map((leak) => {
+                const sev = SEVERITY_CFG[leak.severity] || SEVERITY_CFG.low;
+                const st = STATUS_DARK[leak.status] || STATUS_DARK.found;
+                return (
+                  <TableRow key={leak.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.06)' }} className="hover:bg-white/[0.02] transition-colors">
                     <TableCell>
                       <div className="max-w-[250px]">
-                        <p className="font-medium text-slate-900 truncate">{leak.domain}</p>
+                        <p className="font-medium truncate" style={{ color: T.text }}>{leak.domain}</p>
                         <div className="flex items-center gap-1">
-                          <a 
-                            href={leak.leak_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:underline truncate"
-                          >
+                          <a href={leak.leak_url} target="_blank" rel="noopener noreferrer"
+                            className="text-xs hover:underline truncate" style={{ color: T.textMuted }}>
                             {leak.leak_url?.substring(0, 40)}...
                           </a>
-                          <ExternalLink className="w-3 h-3 text-blue-600 flex-shrink-0" />
+                          <ExternalLink className="w-3 h-3 flex-shrink-0" style={{ color: T.textMuted }} />
                         </div>
                       </div>
                     </TableCell>
+                    <TableCell style={{ color: T.text, fontSize: 14 }}>{leak.creator_name || 'N/D'}</TableCell>
+                    <TableCell style={{ color: T.textMuted, fontSize: 13, textTransform: 'capitalize' }}>{leak.content_type || 'N/D'}</TableCell>
                     <TableCell>
-                      <span className="text-sm font-medium text-slate-900">{leak.creator_name || 'N/D'}</span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm capitalize text-slate-600">{leak.content_type || 'N/D'}</span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={`text-xs capitalize ${SEVERITY_COLORS[leak.severity] || SEVERITY_COLORS.low}`}>
+                      <span style={{ background: sev.bg, color: sev.color, padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600, textTransform: 'capitalize' }}>
                         {leak.severity || 'N/D'}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell>
-                      <Badge className={`text-xs ${STATUS_COLORS[leak.status] || 'bg-slate-100'}`}>
-                        {STATUS_LABELS[leak.status] || leak.status}
-                      </Badge>
+                      <span style={{ background: st.bg, color: st.color, padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                        {st.label || leak.status}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell style={{ color: T.textMuted, fontSize: 13 }}>
                       {leak.discovery_date ? format(new Date(leak.discovery_date), 'dd/MM/yy') : 'N/D'}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <span className="font-semibold text-slate-900">{Math.round(leak.damage_score || 0)}</span>
-                        {leak.damage_score >= 70 && <AlertTriangle className="w-3.5 h-3.5 text-red-500" />}
+                        <span className="font-semibold" style={{ color: (leak.damage_score || 0) >= 70 ? '#f87171' : T.text }}>{Math.round(leak.damage_score || 0)}</span>
+                        {(leak.damage_score || 0) >= 70 && <AlertTriangle className="w-3.5 h-3.5" style={{ color: '#f87171' }} />}
                       </div>
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/5">
+                            <MoreVertical className="w-4 h-4" style={{ color: T.textMuted }} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                           <DropdownMenuItem onClick={() => handleEdit(leak)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Modifica
+                            <Edit className="w-4 h-4 mr-2" />Modifica
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <Send className="w-4 h-4 mr-2" />
-                            Invia DMCA
+                            <Send className="w-4 h-4 mr-2" />Invia DMCA
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={() => deleteMutation.mutate(leak.id)}
-                            className="text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Elimina
+                          <DropdownMenuItem onClick={() => deleteMutation.mutate(leak.id)} className="text-red-400">
+                            <Trash2 className="w-4 h-4 mr-2" />Elimina
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        {filteredLeaks.length === 0 && (
+          <div className="text-center py-12">
+            <AlertTriangle className="w-12 h-12 mx-auto mb-4" style={{ color: 'rgba(99,102,241,0.3)' }} />
+            <p style={{ color: T.textMuted }}>Nessun leak trovato</p>
           </div>
-          {filteredLeaks.length === 0 && (
-            <div className="text-center py-12 text-slate-500">
-              <AlertTriangle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <p>Nessun leak trovato</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* Leak Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)', color: T.text, maxHeight: '90vh', overflowY: 'auto' }} className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingLeak ? 'Modifica Leak' : 'Nuovo Leak'}
-            </DialogTitle>
+            <DialogTitle style={{ color: T.text }}>{editingLeak ? 'Modifica Leak' : 'Nuovo Leak'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Creator *</Label>
-              <Select 
-                value={formData.creator_id} 
-                onValueChange={(value) => setFormData({ ...formData, creator_id: value })}
-              >
-                <SelectTrigger>
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Creator *</Label>
+              <Select value={formData.creator_id} onValueChange={(value) => setFormData({ ...formData, creator_id: value })}>
+                <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
                   <SelectValue placeholder="Seleziona creator" />
                 </SelectTrigger>
-                <SelectContent>
-                  {creators.map(c => (
-                    <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
-                  ))}
+                <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                  {creators.map(c => <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
-              <Label>URL Leak *</Label>
-              <Input
-                value={formData.leak_url}
-                onChange={(e) => {
-                  const url = e.target.value;
-                  setFormData({ 
-                    ...formData, 
-                    leak_url: url,
-                    domain: extractDomain(url) || formData.domain
-                  });
-                }}
-                placeholder="https://..."
-                required
-              />
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>URL Leak *</Label>
+              <Input value={formData.leak_url}
+                onChange={(e) => { const url = e.target.value; setFormData({ ...formData, leak_url: url, domain: extractDomain(url) || formData.domain }); }}
+                placeholder="https://..." required
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Dominio</Label>
-                <Input
-                  value={formData.domain}
-                  onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Dominio</Label>
+                <Input value={formData.domain} onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Hosting Provider</Label>
-                <Input
-                  value={formData.hosting_provider}
-                  onChange={(e) => setFormData({ ...formData, hosting_provider: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Hosting Provider</Label>
+                <Input value={formData.hosting_provider} onChange={(e) => setFormData({ ...formData, hosting_provider: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
             </div>
-
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Registrar</Label>
-                <Input
-                  value={formData.registrar}
-                  onChange={(e) => setFormData({ ...formData, registrar: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Registrar</Label>
+                <Input value={formData.registrar} onChange={(e) => setFormData({ ...formData, registrar: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Paese</Label>
-                <Input
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Paese</Label>
+                <Input value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                   placeholder="US, DE, NL..."
-                />
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Views Stimate</Label>
-                <Input
-                  type="number"
-                  value={formData.estimated_views}
-                  onChange={(e) => setFormData({ ...formData, estimated_views: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Views Stimate</Label>
+                <Input type="number" value={formData.estimated_views} onChange={(e) => setFormData({ ...formData, estimated_views: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
             </div>
-
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Tipo Contenuto</Label>
-                <Select 
-                  value={formData.content_type} 
-                  onValueChange={(value) => setFormData({ ...formData, content_type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="video">Video</SelectItem>
-                    <SelectItem value="gallery">Gallery</SelectItem>
-                    <SelectItem value="mega">Mega</SelectItem>
-                    <SelectItem value="torrent">Torrent</SelectItem>
-                    <SelectItem value="forum">Forum</SelectItem>
-                    <SelectItem value="telegram">Telegram</SelectItem>
-                    <SelectItem value="other">Altro</SelectItem>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Tipo Contenuto</Label>
+                <Select value={formData.content_type} onValueChange={(value) => setFormData({ ...formData, content_type: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    {['video','gallery','mega','torrent','forum','telegram','other'].map(v => <SelectItem key={v} value={v} className="capitalize">{v}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Rilevato da</Label>
-                <Select 
-                  value={formData.detected_by} 
-                  onValueChange={(value) => setFormData({ ...formData, detected_by: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Rilevato da</Label>
+                <Select value={formData.detected_by} onValueChange={(value) => setFormData({ ...formData, detected_by: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                     <SelectItem value="manual">Manuale</SelectItem>
                     <SelectItem value="scraping">Scraping</SelectItem>
                     <SelectItem value="tool">Tool</SelectItem>
@@ -523,15 +452,10 @@ export default function Leaks() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Severità</Label>
-                <Select 
-                  value={formData.severity} 
-                  onValueChange={(value) => setFormData({ ...formData, severity: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Severità</Label>
+                <Select value={formData.severity} onValueChange={(value) => setFormData({ ...formData, severity: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                     <SelectItem value="critical">Critica</SelectItem>
                     <SelectItem value="high">Alta</SelectItem>
                     <SelectItem value="medium">Media</SelectItem>
@@ -540,32 +464,24 @@ export default function Leaks() {
                 </Select>
               </div>
             </div>
-
             <div className="flex items-center gap-2">
-              <Checkbox
-                id="google_indexed"
-                checked={formData.google_indexed}
-                onCheckedChange={(checked) => setFormData({ ...formData, google_indexed: checked })}
-              />
-              <Label htmlFor="google_indexed" className="text-sm font-normal">
+              <Checkbox id="google_indexed" checked={formData.google_indexed}
+                onCheckedChange={(checked) => setFormData({ ...formData, google_indexed: checked })} />
+              <Label htmlFor="google_indexed" className="text-sm font-normal" style={{ color: T.textMuted }}>
                 Indicizzato su Google
               </Label>
             </div>
-
             <div className="space-y-2">
-              <Label>Note</Label>
-              <Textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows={2}
-              />
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Note</Label>
+              <Textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2}
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
             </div>
-
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}
+                style={{ borderColor: 'rgba(99,102,241,0.3)', color: T.textMuted, background: 'transparent' }}>
                 Annulla
               </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
                 {editingLeak ? 'Salva Modifiche' : 'Crea Leak'}
               </Button>
             </div>
