@@ -10,14 +10,12 @@ import {
   Globe, 
   Kanban,
   BarChart3,
-  Settings,
   LogOut,
   Menu,
   X,
   Shield,
   ShieldCheck,
-  Bell,
-  ChevronDown
+  Zap
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
