@@ -55,19 +55,22 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
               },
             },
           });
-          abuseEmail = result?.abuse_email || null;
-
-          // Save discovered email back to DomainIntelligence
-          if (abuseEmail && abuseEmail.includes('@')) {
+          const foundEmail = result?.abuse_email;
+          // Only accept if it's a clearly valid email, never invent one
+          if (foundEmail && foundEmail.includes('@') && foundEmail.includes('.')) {
+            abuseEmail = foundEmail;
+            // Save discovered email back to DomainIntelligence
             const domainEntries = await base44.entities.DomainIntelligence.filter({ domain_name: leak.domain });
             if (domainEntries[0]) {
               await base44.entities.DomainIntelligence.update(domainEntries[0].id, { abuse_email: abuseEmail });
             }
+          } else {
+            abuseEmail = null;
           }
-        } catch (_) {}
+        } catch (_) { abuseEmail = null; }
 
-        if (!abuseEmail) {
-          setError('Email abuse non trovata automaticamente. Aggiungila in Domain Intelligence.');
+        if (!abuseEmail || !abuseEmail.includes('@')) {
+          setError(`Email abuse non trovata per "${leak.domain}". Inseriscila manualmente in Domain Intelligence.`);
           setLoading(false);
           return;
         }
