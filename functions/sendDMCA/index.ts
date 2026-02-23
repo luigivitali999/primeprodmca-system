@@ -71,6 +71,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: "Missing required fields: abuseEmail, leakUrl, creatorName" }, { status: 400 });
     }
 
+    // Build dynamic sender based on creator name
+    const creatorSlug = (creatorName || "dmca")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "")
+      .slice(0, 30);
+    const FROM_EMAIL = `${creatorSlug}@${FROM_DOMAIN}`;
+    const FROM_NAME = creatorName || "PRIME DMCA Intelligence";
+
     const emailBody = buildDMCAEmail({ creatorName, leakUrl, domain, sentToEntity, abuseEmail, noticeNumber });
 
     // Send via Brevo API
