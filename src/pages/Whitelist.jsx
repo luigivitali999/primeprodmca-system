@@ -264,132 +264,122 @@ export default function Whitelist() {
             <TableHeader>
               <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
                 <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Dominio / Piattaforma
-                  <TableHead>Creator</TableHead>
-                  <TableHead>Scope</TableHead>
-                  <TableHead>Contenuti Permessi</TableHead>
-                  <TableHead>Autorizzato il</TableHead>
-                  <TableHead>Scadenza</TableHead>
-                  <TableHead>Stato</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEntries.map((entry) => {
-                  const isExpired = entry.expiry_date && new Date(entry.expiry_date) < new Date() && entry.status === 'active';
-                  return (
-                    <TableRow key={entry.id} className="hover:bg-slate-50">
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                            <Globe className="w-4 h-4 text-slate-500" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-slate-900">{entry.domain}</p>
-                            {entry.platform_name && (
-                              <p className="text-xs text-slate-500">{entry.platform_name}</p>
-                            )}
-                          </div>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Creator</TableHead>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Scope</TableHead>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Contenuti</TableHead>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Autorizzato il</TableHead>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Scadenza</TableHead>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Stato</TableHead>
+                <TableHead style={{ background: '#0a1120', width: 40 }}></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredEntries.map((entry) => {
+                const isExpired = entry.expiry_date && new Date(entry.expiry_date) < new Date() && entry.status === 'active';
+                const statusKey = isExpired ? 'expired' : entry.status;
+                const sc = STATUS_CONFIG[statusKey] || STATUS_CONFIG.active;
+                const scp = SCOPE_CONFIG[entry.scope] || SCOPE_CONFIG.creator_specific;
+                return (
+                  <TableRow key={entry.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.06)' }} className="hover:bg-white/[0.02] transition-colors">
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Globe className="w-4 h-4" style={{ color: '#34d399' }} />
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {entry.scope === 'global' ? (
-                          <span className="text-sm text-slate-500 italic">Tutti i creator</span>
-                        ) : (
-                          <span className="text-sm font-medium text-slate-900">
-                            {entry.creator_name || 'N/D'}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`text-xs ${SCOPE_CONFIG[entry.scope]?.className || ''}`}>
-                          {SCOPE_CONFIG[entry.scope]?.label || entry.scope}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {entry.content_types_allowed?.length > 0 ? (
-                            entry.content_types_allowed.slice(0, 3).map(type => (
-                              <Badge key={type} variant="outline" className="text-[10px] capitalize">
-                                {type}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-xs text-slate-400">Tutti</span>
-                          )}
-                          {(entry.content_types_allowed?.length || 0) > 3 && (
-                            <Badge variant="outline" className="text-[10px]">
-                              +{entry.content_types_allowed.length - 3}
-                            </Badge>
+                        <div>
+                          <p className="font-medium" style={{ color: T.text }}>{entry.domain}</p>
+                          {entry.platform_name && (
+                            <p className="text-xs" style={{ color: T.textMuted }}>{entry.platform_name}</p>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-slate-600">
-                        {entry.authorization_date
-                          ? format(new Date(entry.authorization_date), 'dd/MM/yyyy')
-                          : 'N/D'}
-                      </TableCell>
-                      <TableCell>
-                        {entry.expiry_date ? (
-                          <span className={`text-sm flex items-center gap-1 ${isExpired ? 'text-red-600' : 'text-slate-600'}`}>
-                            {isExpired && <AlertTriangle className="w-3 h-3" />}
-                            {format(new Date(entry.expiry_date), 'dd/MM/yyyy')}
-                          </span>
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ color: T.text, fontSize: 14 }}>
+                      {entry.scope === 'global' ? (
+                        <span style={{ color: T.textMuted, fontStyle: 'italic', fontSize: 13 }}>Tutti i creator</span>
+                      ) : (
+                        entry.creator_name || 'N/D'
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span style={{ background: scp.bg, color: scp.color, padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                        {scp.label}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {entry.content_types_allowed?.length > 0 ? (
+                          entry.content_types_allowed.slice(0, 2).map(type => (
+                            <span key={type} style={{ background: 'rgba(99,102,241,0.1)', color: '#a5b4fc', padding: '1px 7px', borderRadius: 4, fontSize: 11, textTransform: 'capitalize' }}>
+                              {type}
+                            </span>
+                          ))
                         ) : (
-                          <span className="text-xs text-slate-400">Nessuna</span>
+                          <span style={{ color: T.textMuted, fontSize: 12 }}>Tutti</span>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`text-xs ${STATUS_CONFIG[isExpired ? 'expired' : entry.status]?.className || ''}`}>
-                          {STATUS_CONFIG[isExpired ? 'expired' : entry.status]?.label || entry.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEdit(entry)}>
-                              <Edit className="w-4 h-4 mr-2" />
-                              Modifica
+                        {(entry.content_types_allowed?.length || 0) > 2 && (
+                          <span style={{ color: T.textMuted, fontSize: 12 }}>+{entry.content_types_allowed.length - 2}</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ color: T.textMuted, fontSize: 13 }}>
+                      {entry.authorization_date ? format(new Date(entry.authorization_date), 'dd/MM/yyyy') : 'N/D'}
+                    </TableCell>
+                    <TableCell>
+                      {entry.expiry_date ? (
+                        <span className="text-sm flex items-center gap-1" style={{ color: isExpired ? '#f87171' : T.textMuted }}>
+                          {isExpired && <AlertTriangle className="w-3 h-3" />}
+                          {format(new Date(entry.expiry_date), 'dd/MM/yyyy')}
+                        </span>
+                      ) : (
+                        <span style={{ color: T.textDim, fontSize: 12 }}>Nessuna</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <span style={{ background: sc.bg, color: sc.color, padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                        {sc.label}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/5">
+                            <MoreVertical className="w-4 h-4" style={{ color: T.textMuted }} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                          <DropdownMenuItem onClick={() => handleEdit(entry)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Modifica
+                          </DropdownMenuItem>
+                          {entry.status === 'active' && (
+                            <DropdownMenuItem onClick={() => revokeMutation.mutate(entry.id)} className="text-amber-400">
+                              <AlertTriangle className="w-4 h-4 mr-2" />
+                              Revoca
                             </DropdownMenuItem>
-                            {entry.status === 'active' && (
-                              <DropdownMenuItem
-                                onClick={() => revokeMutation.mutate(entry.id)}
-                                className="text-amber-600"
-                              >
-                                <AlertTriangle className="w-4 h-4 mr-2" />
-                                Revoca
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => deleteMutation.mutate(entry.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Elimina
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => deleteMutation.mutate(entry.id)} className="text-red-400">
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Elimina
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        {filteredEntries.length === 0 && (
+          <div className="text-center py-12">
+            <ShieldCheck className="w-12 h-12 mx-auto mb-4" style={{ color: 'rgba(99,102,241,0.3)' }} />
+            <p className="font-medium" style={{ color: T.text }}>Nessun sito in whitelist</p>
+            <p className="text-sm mt-1" style={{ color: T.textMuted }}>Aggiungi i siti autorizzati a pubblicare i contenuti dei creator</p>
           </div>
-          {filteredEntries.length === 0 && (
-            <div className="text-center py-12 text-slate-500">
-              <ShieldCheck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <p className="font-medium">Nessun sito in whitelist</p>
-              <p className="text-sm mt-1">Aggiungi i siti autorizzati a pubblicare i contenuti dei creator</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
