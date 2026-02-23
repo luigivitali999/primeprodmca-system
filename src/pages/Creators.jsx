@@ -62,6 +62,7 @@ export default function Creators() {
     monthly_revenue: '',
     creator_tier: 'medium',
     content_value: '',
+    ltv_mean_fan: '',
     status: 'active',
     notes: '',
     doc_front_url: '',
@@ -110,6 +111,7 @@ export default function Creators() {
       monthly_revenue: '',
       creator_tier: 'medium',
       content_value: '',
+      ltv_mean_fan: '',
       status: 'active',
       notes: '',
       doc_front_url: '',
@@ -126,6 +128,7 @@ export default function Creators() {
       ...formData,
       monthly_revenue: formData.monthly_revenue ? parseFloat(formData.monthly_revenue) : 0,
       content_value: formData.content_value ? parseFloat(formData.content_value) : null,
+      ltv_mean_fan: formData.ltv_mean_fan ? parseFloat(formData.ltv_mean_fan) : null,
     };
 
     if (editingCreator) {
@@ -144,6 +147,7 @@ export default function Creators() {
       monthly_revenue: creator.monthly_revenue?.toString() || '',
       creator_tier: creator.creator_tier || 'medium',
       content_value: creator.content_value?.toString() || '',
+      ltv_mean_fan: creator.ltv_mean_fan?.toString() || '',
       status: creator.status || 'active',
       notes: creator.notes || '',
       doc_front_url: creator.doc_front_url || '',
@@ -409,12 +413,19 @@ export default function Creators() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label style={{ color: T.textMuted, fontSize: 12 }}>Valore Personalizzato (€)</Label>
-                  <Input type="number" value={formData.content_value}
-                    onChange={(e) => setFormData({ ...formData, content_value: e.target.value })}
-                    placeholder="Sovrascrive il tier"
-                    style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
-                </div>
+                   <Label style={{ color: T.textMuted, fontSize: 12 }}>Valore Personalizzato (€)</Label>
+                   <Input type="number" value={formData.content_value}
+                     onChange={(e) => setFormData({ ...formData, content_value: e.target.value })}
+                     placeholder="Sovrascrive il tier"
+                     style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
+                 </div>
+                 <div className="space-y-2">
+                   <Label style={{ color: T.textMuted, fontSize: 12 }}>LTV Media Fan (€)</Label>
+                   <Input type="number" value={formData.ltv_mean_fan}
+                     onChange={(e) => setFormData({ ...formData, ltv_mean_fan: e.target.value })}
+                     placeholder="Lifetime Value per fan"
+                     style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
+                 </div>
               </div>
             </div>
 
