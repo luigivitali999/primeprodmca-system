@@ -110,10 +110,10 @@ export default function Pipeline() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-8 w-48" style={{ background: 'rgba(99,102,241,0.1)' }} />
         <div className="flex gap-4 overflow-x-auto">
           {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-96 w-72 flex-shrink-0 rounded-xl" />
+            <Skeleton key={i} className="h-96 w-72 flex-shrink-0 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)' }} />
           ))}
         </div>
       </div>
@@ -125,26 +125,24 @@ export default function Pipeline() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">DMCA Pipeline</h1>
-          <p className="text-slate-500 mt-1">{filteredLeaks.length} leak in gestione</p>
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>DMCA Pipeline</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>{filteredLeaks.length} leak in gestione</p>
         </div>
         <div className="flex gap-3">
           <Select value={creatorFilter} onValueChange={setCreatorFilter}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-48" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
               <SelectValue placeholder="Filtra creator" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
               <SelectItem value="all">Tutti i creator</SelectItem>
-              {creators.map(c => (
-                <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
-              ))}
+              {creators.map(c => <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={severityFilter} onValueChange={setSeverityFilter}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
               <SelectValue placeholder="Severità" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
               <SelectItem value="all">Tutte</SelectItem>
               <SelectItem value="critical">Critica</SelectItem>
               <SelectItem value="high">Alta</SelectItem>
@@ -162,16 +160,16 @@ export default function Pipeline() {
             const columnLeaks = getColumnLeaks(column.id);
             return (
               <div key={column.id} className="flex-shrink-0 w-72">
-                <div className="bg-slate-100 rounded-xl p-3">
+                <div style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 12, padding: 12 }}>
                   {/* Column Header */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full ${column.color}`} />
-                      <h3 className="font-semibold text-slate-900 text-sm">{column.label}</h3>
+                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: column.dot, flexShrink: 0 }} />
+                      <h3 className="font-semibold text-sm" style={{ color: T.text }}>{column.label}</h3>
                     </div>
-                    <Badge variant="secondary" className="bg-white text-slate-600">
+                    <span style={{ background: 'rgba(99,102,241,0.15)', color: T.indigoSoft, padding: '1px 8px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
                       {columnLeaks.length}
-                    </Badge>
+                    </span>
                   </div>
 
                   {/* Droppable Area */}
@@ -180,9 +178,8 @@ export default function Pipeline() {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`min-h-[400px] space-y-2 transition-colors rounded-lg p-1 ${
-                          snapshot.isDraggingOver ? 'bg-blue-50' : ''
-                        }`}
+                        className="space-y-2 transition-colors rounded-lg p-1"
+                        style={{ minHeight: 400, background: snapshot.isDraggingOver ? 'rgba(99,102,241,0.06)' : 'transparent' }}
                       >
                         {columnLeaks.map((leak, index) => (
                           <Draggable key={leak.id} draggableId={leak.id} index={index}>
@@ -191,72 +188,61 @@ export default function Pipeline() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`bg-white rounded-lg border-l-4 shadow-sm hover:shadow transition-shadow ${
-                                  SEVERITY_COLORS[leak.severity] || SEVERITY_COLORS.low
-                                } ${snapshot.isDragging ? 'shadow-lg rotate-1' : ''}`}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  background: '#0f172a',
+                                  borderRadius: 8,
+                                  borderLeft: `3px solid ${SEVERITY_BORDER[leak.severity] || SEVERITY_BORDER.low}`,
+                                  boxShadow: snapshot.isDragging ? '0 8px 24px rgba(0,0,0,0.4)' : '0 1px 4px rgba(0,0,0,0.3)',
+                                  transform: snapshot.isDragging ? `${provided.draggableProps.style?.transform} rotate(1deg)` : provided.draggableProps.style?.transform,
+                                }}
                               >
                                 <div className="p-3">
                                   <div className="flex items-start justify-between mb-2">
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-slate-900 truncate">
-                                        {leak.domain}
-                                      </p>
-                                      <a 
-                                        href={leak.leak_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-xs text-blue-600 hover:underline flex items-center gap-1"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        Apri URL
-                                        <ExternalLink className="w-3 h-3" />
+                                      <p className="text-sm font-medium truncate" style={{ color: T.text }}>{leak.domain}</p>
+                                      <a href={leak.leak_url} target="_blank" rel="noopener noreferrer"
+                                        className="text-xs hover:underline flex items-center gap-1" style={{ color: '#60a5fa' }}
+                                        onClick={(e) => e.stopPropagation()}>
+                                        Apri URL <ExternalLink className="w-3 h-3" />
                                       </a>
                                     </div>
                                     <DropdownMenu>
                                       <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-6 w-6 -mr-1">
-                                          <MoreVertical className="w-3 h-3" />
+                                        <Button variant="ghost" size="icon" className="h-6 w-6 -mr-1 hover:bg-white/5">
+                                          <MoreVertical className="w-3 h-3" style={{ color: T.textMuted }} />
                                         </Button>
                                       </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>
-                                          <Eye className="w-3 h-3 mr-2" />
-                                          Dettagli
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                          <Send className="w-3 h-3 mr-2" />
-                                          Invia DMCA
-                                        </DropdownMenuItem>
+                                      <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                                        <DropdownMenuItem><Eye className="w-3 h-3 mr-2" />Dettagli</DropdownMenuItem>
+                                        <DropdownMenuItem><Send className="w-3 h-3 mr-2" />Invia DMCA</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
 
-                                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                                  <div className="flex items-center gap-2 text-xs mb-2" style={{ color: T.textMuted }}>
                                     <User className="w-3 h-3" />
                                     <span className="truncate">{leak.creator_name || 'N/D'}</span>
                                   </div>
 
                                   <div className="flex items-center justify-between">
-                                    <Badge 
-                                      variant="outline" 
-                                      className={`text-[10px] capitalize ${
-                                        leak.severity === 'critical' ? 'bg-red-50 text-red-700 border-red-200' :
-                                        leak.severity === 'high' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                        'bg-slate-50 text-slate-600'
-                                      }`}
-                                    >
+                                    <span style={{
+                                      background: `${SEVERITY_BORDER[leak.severity]}22`,
+                                      color: SEVERITY_BORDER[leak.severity] || T.textMuted,
+                                      padding: '1px 7px', borderRadius: 4, fontSize: 10, fontWeight: 600, textTransform: 'capitalize'
+                                    }}>
                                       {leak.severity}
-                                    </Badge>
+                                    </span>
                                     {leak.discovery_date && (
-                                      <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                                      <span className="flex items-center gap-1" style={{ fontSize: 10, color: T.textMuted }}>
                                         <Clock className="w-3 h-3" />
                                         {format(new Date(leak.discovery_date), 'dd/MM')}
                                       </span>
                                     )}
                                   </div>
 
-                                  {leak.damage_score >= 70 && (
-                                    <div className="mt-2 flex items-center gap-1 text-[10px] text-red-600">
+                                  {(leak.damage_score || 0) >= 70 && (
+                                    <div className="mt-2 flex items-center gap-1" style={{ fontSize: 10, color: '#f87171' }}>
                                       <AlertTriangle className="w-3 h-3" />
                                       Score {Math.round(leak.damage_score)}
                                     </div>
