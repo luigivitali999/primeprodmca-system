@@ -495,12 +495,13 @@ export default function Whitelist() {
             </div>
 
             <div className="space-y-2">
-              <Label>Note</Label>
+              <Label style={{ color: T.text }}>Note</Label>
               <Textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={2}
                 placeholder="Dettagli accordo, contratto di riferimento..."
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
               />
             </div>
 
