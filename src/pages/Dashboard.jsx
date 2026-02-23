@@ -111,7 +111,7 @@ export default function Dashboard() {
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Creator Attivi"
           value={creators.filter(c => c.status === 'active').length}
@@ -130,6 +130,7 @@ export default function Dashboard() {
           icon={FileText}
           color="blue"
         />
+        <EconomicLossCard creators={creators} leaks={leaks} domains={domains} />
       </div>
 
       {/* Charts Row */}
