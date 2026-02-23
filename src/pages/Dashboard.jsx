@@ -16,7 +16,9 @@ import LeaksByStatus from '@/components/dashboard/LeaksByStatus';
 import LeaksTimeline from '@/components/dashboard/LeaksTimeline';
 import TopDomainsTable from '@/components/dashboard/TopDomainsTable';
 import CreatorRiskRanking from '@/components/dashboard/CreatorRiskRanking';
+import EconomicLossCard from '@/components/dashboard/EconomicLossCard';
 import { Skeleton } from "@/components/ui/skeleton";
+import { calcEstimatedLoss } from '@/components/utils/theme';
 
 export default function Dashboard() {
   const { data: leaks = [], isLoading: leaksLoading } = useQuery({
