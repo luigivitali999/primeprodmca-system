@@ -6,15 +6,18 @@ import { createPageUrl } from '@/utils';
 import { 
   Plus, 
   Search, 
-  Filter,
   MoreVertical,
   Eye,
   Edit,
   Trash2,
   AlertTriangle,
-  TrendingUp,
-  Users
+  TrendingDown,
+  Users,
+  ShieldCheck,
+  ShieldAlert
 } from 'lucide-react';
+import DocUploadField from '@/components/creators/DocUploadField';
+import { T, cardStyle, RISK_DARK, calcEstimatedLoss, calcRiskScore, riskLevel, VMC_TIER } from '@/components/utils/theme';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
