@@ -65,6 +65,7 @@ Deno.serve(async (req) => {
       sentToEntity,
       abuseEmail,
       noticeNumber,
+      docSelfieUrl,
     } = body;
 
     if (!abuseEmail || !leakUrl || !creatorName) {
