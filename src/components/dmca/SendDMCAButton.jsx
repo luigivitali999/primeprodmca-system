@@ -16,6 +16,15 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
   const [formModal, setFormModal] = useState(null); // { formUrl, noticeNumber, activeDmcaId }
   const [preferredMethod, setPreferredMethod] = useState(null);
 
+  useEffect(() => {
+    // Fetch domain method on mount
+    if (leak?.domain) {
+      base44.entities.DomainIntelligence.filter({ domain_name: leak.domain }).then(domainEntries => {
+        setPreferredMethod(domainEntries[0]?.preferred_method || 'email');
+      }).catch(() => setPreferredMethod('email'));
+    }
+  }, [leak?.domain]);
+
   const handleSend = async (e) => {
     e.stopPropagation();
     if (loading || sent) return;
@@ -30,7 +39,7 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
       ]);
       const docSelfieUrl = creators[0]?.doc_selfie_url || null;
       const domainData = domainEntries[0] || null;
-      const preferredMethod = domainData?.preferred_method || 'email';
+      const method = domainData?.preferred_method || 'email';
 
       // 2. Generate notice number and create DMCARequest if needed
       const noticeNumber = `PRIME-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -43,7 +52,7 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
           notice_number: noticeNumber,
           sent_to_entity: leak.hosting_provider || leak.domain,
           sent_to_type: 'hosting',
-          method: preferredMethod,
+          method,
           status: 'pending',
           escalation_level: 0,
           follow_up_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -52,7 +61,7 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
       }
 
       // 3. If method is "form" → open modal
-      if (preferredMethod === 'form') {
+      if (method === 'form') {
         setFormModal({
           formUrl: domainData?.dmca_contact || null,
           noticeNumber,
@@ -63,7 +72,7 @@ export default function SendDMCAButton({ leak, dmcaRequestId, onSuccess, size = 
       }
 
       // 4. Email method → find abuse email
-      let abuseEmail = domainData?.abuse_email || domainData?.dmca_contact || null;
+      let abuseEmail = domainData?.abuse_email || null;
 
       if (!abuseEmail) {
         // Try to discover via AI
