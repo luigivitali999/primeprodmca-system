@@ -204,62 +204,36 @@ export default function Domains() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Domain Intelligence</h1>
-          <p className="text-slate-500 mt-1">{domains.length} domini monitorati</p>
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>Domain Intelligence</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>{domains.length} domini monitorati</p>
         </div>
-        <Button 
-          onClick={() => { resetForm(); setIsDialogOpen(true); }}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Aggiungi Dominio
+        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}
+          style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
+          <Plus className="w-4 h-4 mr-2" />Aggiungi Dominio
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatsCard
-          title="Domini Totali"
-          value={domains.length}
-          icon={Globe}
-          color="blue"
-        />
-        <StatsCard
-          title="Alto Rischio"
-          value={highRiskDomains.length}
-          icon={AlertTriangle}
-          color="red"
-        />
-        <StatsCard
-          title="Tasso Rimozione Medio"
-          value={`${avgRemovalRate}%`}
-          icon={TrendingUp}
-          color="emerald"
-        />
-        <StatsCard
-          title="Leak Totali"
-          value={totalLeaks}
-          icon={Shield}
-          color="amber"
-        />
+        <StatsCard title="Domini Totali" value={domains.length} icon={Globe} color="blue" />
+        <StatsCard title="Alto Rischio" value={highRiskDomains.length} icon={AlertTriangle} color="red" />
+        <StatsCard title="Tasso Rimozione Medio" value={`${avgRemovalRate}%`} icon={TrendingUp} color="emerald" />
+        <StatsCard title="Leak Totali" value={totalLeaks} icon={Shield} color="amber" />
       </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            placeholder="Cerca per dominio o hosting..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: T.textMuted }} />
+          <Input placeholder="Cerca per dominio o hosting..." value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} className="pl-10"
+            style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
         </div>
         <Select value={riskFilter} onValueChange={setRiskFilter}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Livello Rischio" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti i livelli</SelectItem>
             <SelectItem value="high">Alto Rischio</SelectItem>
             <SelectItem value="normal">Normale</SelectItem>
@@ -268,234 +242,167 @@ export default function Domains() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border-0 shadow-sm">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50">
-                  <TableHead>Dominio</TableHead>
-                  <TableHead>Hosting / Registrar</TableHead>
-                  <TableHead>Leak</TableHead>
-                  <TableHead>Tasso Rimozione</TableHead>
-                  <TableHead>Tempo Medio</TableHead>
-                  <TableHead>Risposta</TableHead>
-                  <TableHead>Rischio</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredDomains.map((domain) => (
-                  <TableRow key={domain.id} className="hover:bg-slate-50">
+      <div style={{ ...cardStyle, overflow: 'hidden' }}>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+                {['Dominio', 'Hosting / Registrar', 'Leak', 'Tasso Rimozione', 'Tempo Medio', 'Risposta', 'Score', ''].map(h => (
+                  <TableHead key={h} style={{ color: T.textMuted, fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', background: '#0a1120' }}>{h}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDomains.map((domain) => {
+                const rq = RESPONSE_CFG[domain.response_quality];
+                return (
+                  <TableRow key={domain.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.06)' }} className="hover:bg-white/[0.02] transition-colors">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {domain.high_risk_flag && (
-                          <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                        )}
-                        <span className="font-medium text-slate-900">{domain.domain_name}</span>
+                        {domain.high_risk_flag && <AlertTriangle className="w-4 h-4 flex-shrink-0" style={{ color: '#f87171' }} />}
+                        <span className="font-medium" style={{ color: T.text }}>{domain.domain_name}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <p className="text-sm text-slate-900">{domain.hosting_provider || 'N/D'}</p>
-                        <p className="text-xs text-slate-500">{domain.registrar || 'N/D'}</p>
-                      </div>
+                      <p className="text-sm" style={{ color: T.text }}>{domain.hosting_provider || 'N/D'}</p>
+                      <p className="text-xs" style={{ color: T.textMuted }}>{domain.registrar || 'N/D'}</p>
                     </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <span className="font-semibold text-slate-900">{domain.total_leaks || 0}</span>
-                        <span className="text-slate-500"> / </span>
-                        <span className="text-emerald-600">{domain.total_removed || 0} rimossi</span>
-                      </div>
+                    <TableCell className="text-sm">
+                      <span className="font-semibold" style={{ color: T.text }}>{domain.total_leaks || 0}</span>
+                      <span style={{ color: T.textMuted }}> / </span>
+                      <span style={{ color: '#34d399' }}>{domain.total_removed || 0} rimossi</span>
                     </TableCell>
                     <TableCell>
                       <div className="w-24">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-semibold text-slate-900">
-                            {Math.round(domain.removal_rate || 0)}%
-                          </span>
+                        <p className="text-sm font-semibold mb-1" style={{ color: T.text }}>{Math.round(domain.removal_rate || 0)}%</p>
+                        <div style={{ height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+                          <div style={{ width: `${domain.removal_rate || 0}%`, height: '100%', background: 'linear-gradient(90deg,#6366f1,#10b981)', borderRadius: 2 }} />
                         </div>
-                        <Progress value={domain.removal_rate || 0} className="h-1.5" />
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        {Math.round(domain.avg_removal_time || 0)}g
+                      <span className="text-sm flex items-center gap-1" style={{ color: T.textMuted }}>
+                        <Clock className="w-3 h-3" />{Math.round(domain.avg_removal_time || 0)}g
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge className={`text-xs ${RESPONSE_COLORS[domain.response_quality] || 'bg-slate-100'}`}>
-                        {RESPONSE_LABELS[domain.response_quality] || 'N/D'}
-                      </Badge>
+                      {rq ? <span style={{ background: rq.bg, color: rq.color, padding: '2px 9px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>{rq.label}</span>
+                        : <span style={{ color: T.textMuted, fontSize: 12 }}>N/D</span>}
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm font-semibold text-slate-900">
+                      <span className="font-semibold" style={{ color: (domain.blacklist_score || 0) >= 60 ? '#f87171' : T.text }}>
                         {Math.round(domain.blacklist_score || 0)}
                       </span>
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/5">
+                            <MoreVertical className="w-4 h-4" style={{ color: T.textMuted }} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEdit(domain)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Modifica
-                          </DropdownMenuItem>
+                        <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                          <DropdownMenuItem onClick={() => handleEdit(domain)}><Edit className="w-4 h-4 mr-2" />Modifica</DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={() => deleteMutation.mutate(domain.id)}
-                            className="text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Elimina
+                          <DropdownMenuItem onClick={() => deleteMutation.mutate(domain.id)} className="text-red-400">
+                            <Trash2 className="w-4 h-4 mr-2" />Elimina
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        {filteredDomains.length === 0 && (
+          <div className="text-center py-12">
+            <Globe className="w-12 h-12 mx-auto mb-4" style={{ color: 'rgba(99,102,241,0.3)' }} />
+            <p style={{ color: T.textMuted }}>Nessun dominio trovato</p>
           </div>
-          {filteredDomains.length === 0 && (
-            <div className="text-center py-12 text-slate-500">
-              <Globe className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <p>Nessun dominio trovato</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* Domain Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)', color: T.text, maxHeight: '90vh', overflowY: 'auto' }} className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>
-              {editingDomain ? 'Modifica Dominio' : 'Nuovo Dominio'}
-            </DialogTitle>
+            <DialogTitle style={{ color: T.text }}>{editingDomain ? 'Modifica Dominio' : 'Nuovo Dominio'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Nome Dominio *</Label>
-              <Input
-                value={formData.domain_name}
-                onChange={(e) => setFormData({ ...formData, domain_name: e.target.value })}
-                placeholder="example.com"
-                required
-              />
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Nome Dominio *</Label>
+              <Input value={formData.domain_name} onChange={(e) => setFormData({ ...formData, domain_name: e.target.value })}
+                placeholder="example.com" required
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Hosting Provider</Label>
-                <Input
-                  value={formData.hosting_provider}
-                  onChange={(e) => setFormData({ ...formData, hosting_provider: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Hosting Provider</Label>
+                <Input value={formData.hosting_provider} onChange={(e) => setFormData({ ...formData, hosting_provider: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Registrar</Label>
-                <Input
-                  value={formData.registrar}
-                  onChange={(e) => setFormData({ ...formData, registrar: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Registrar</Label>
+                <Input value={formData.registrar} onChange={(e) => setFormData({ ...formData, registrar: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Paese</Label>
-                <Input
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Paese</Label>
+                <Input value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                   placeholder="US, DE, NL..."
-                />
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Metodo Preferito</Label>
-                <Select 
-                  value={formData.preferred_method} 
-                  onValueChange={(value) => setFormData({ ...formData, preferred_method: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="form">Form Online</SelectItem>
-                    <SelectItem value="api">API</SelectItem>
-                    <SelectItem value="legal">Legale</SelectItem>
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Metodo Preferito</Label>
+                <Select value={formData.preferred_method} onValueChange={(value) => setFormData({ ...formData, preferred_method: value })}>
+                  <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                  <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <SelectItem value="email">Email</SelectItem><SelectItem value="form">Form Online</SelectItem>
+                    <SelectItem value="api">API</SelectItem><SelectItem value="legal">Legale</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Email Abuse</Label>
-                <Input
-                  type="email"
-                  value={formData.abuse_email}
-                  onChange={(e) => setFormData({ ...formData, abuse_email: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Email Abuse</Label>
+                <Input type="email" value={formData.abuse_email} onChange={(e) => setFormData({ ...formData, abuse_email: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
               <div className="space-y-2">
-                <Label>Contatto DMCA</Label>
-                <Input
-                  value={formData.dmca_contact}
-                  onChange={(e) => setFormData({ ...formData, dmca_contact: e.target.value })}
-                />
+                <Label style={{ color: T.textMuted, fontSize: 12 }}>Contatto DMCA</Label>
+                <Input value={formData.dmca_contact} onChange={(e) => setFormData({ ...formData, dmca_contact: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
               </div>
             </div>
-
             <div className="space-y-2">
-              <Label>Qualità Risposta</Label>
-              <Select 
-                value={formData.response_quality} 
-                onValueChange={(value) => setFormData({ ...formData, response_quality: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="excellent">Eccellente</SelectItem>
-                  <SelectItem value="good">Buona</SelectItem>
-                  <SelectItem value="poor">Scarsa</SelectItem>
-                  <SelectItem value="unresponsive">Non Risponde</SelectItem>
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Qualità Risposta</Label>
+              <Select value={formData.response_quality} onValueChange={(value) => setFormData({ ...formData, response_quality: value })}>
+                <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}><SelectValue /></SelectTrigger>
+                <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                  <SelectItem value="excellent">Eccellente</SelectItem><SelectItem value="good">Buona</SelectItem>
+                  <SelectItem value="poor">Scarsa</SelectItem><SelectItem value="unresponsive">Non Risponde</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
             <div className="flex items-center gap-2">
-              <Checkbox
-                id="high_risk"
-                checked={formData.high_risk_flag}
-                onCheckedChange={(checked) => setFormData({ ...formData, high_risk_flag: checked })}
-              />
-              <Label htmlFor="high_risk" className="text-sm font-normal">
-                Contrassegna come Alto Rischio
-              </Label>
+              <Checkbox id="high_risk" checked={formData.high_risk_flag}
+                onCheckedChange={(checked) => setFormData({ ...formData, high_risk_flag: checked })} />
+              <Label htmlFor="high_risk" className="text-sm font-normal" style={{ color: T.textMuted }}>Contrassegna come Alto Rischio</Label>
             </div>
-
             <div className="space-y-2">
-              <Label>Note Intelligence</Label>
-              <Textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                rows={2}
-              />
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Note Intelligence</Label>
+              <Textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2}
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
             </div>
-
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Annulla
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}
+                style={{ borderColor: 'rgba(99,102,241,0.3)', color: T.textMuted, background: 'transparent' }}>Annulla</Button>
+              <Button type="submit" style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}>
                 {editingDomain ? 'Salva Modifiche' : 'Aggiungi Dominio'}
               </Button>
             </div>
