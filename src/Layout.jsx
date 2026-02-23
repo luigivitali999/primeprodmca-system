@@ -130,6 +130,11 @@ export default function Layout({ children, currentPageName }) {
                     {criticalLeaks}
                   </Badge>
                 )}
+                {item.page === 'PendingApprovals' && pendingApprovals > 0 && (
+                  <Badge className="ml-auto text-[10px] px-1.5" style={{ background: 'rgba(245,158,11,0.2)', color: '#fcd34d', border: '1px solid rgba(245,158,11,0.3)' }}>
+                    {pendingApprovals}
+                  </Badge>
+                )}
               </Link>
             );
           })}
