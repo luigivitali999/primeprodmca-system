@@ -2,8 +2,6 @@ import { createClientFromRequest } from "npm:@base44/sdk";
 
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
 const FROM_DOMAIN = "foryoulink.com";
-const FROM_EMAIL = `dmca@${FROM_DOMAIN}`;
-const FROM_NAME = "PRIME DMCA Intelligence";
 
 function buildDMCAEmail(data: {
   creatorName: string;
