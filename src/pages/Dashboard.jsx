@@ -94,7 +94,7 @@ export default function Dashboard() {
         <p style={{ color: '#475569', marginTop: 4, fontSize: 14 }}>Panoramica DMCA Intelligence</p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Top KPI Section - Tactical */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Leak Attivi"
@@ -118,66 +118,12 @@ export default function Dashboard() {
           color="blue"
         />
         <StatsCard
-          title="Leak Critici"
-          value={criticalLeaks.length}
-          subtitle="richiedono attenzione"
-          icon={Activity}
-          color="amber"
-        />
-      </div>
-
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Creator Attivi"
-          value={creators.filter(c => c.status === 'active').length}
-          icon={Users}
-          color="indigo"
-        />
-        <StatsCard
-          title="Domini Monitorati"
-          value={domains.length}
-          icon={Globe}
-          color="slate"
-        />
-        <StatsCard
-          title="DMCA Inviate"
-          value={dmcaRequests.length}
-          icon={FileText}
-          color="blue"
-        />
-        <StatsCard
-          title="Impersonificazioni Attive"
-          value={activeSocialReports.length}
-          icon={AlertTriangle}
+          title="Perdita Stimata"
+          value={`€${(creators.reduce((sum, c) => sum + (c.estimated_loss || 0), 0) / 1000).toFixed(0)}k`}
+          subtitle="accumulata"
+          icon={TrendingUp}
           color="red"
         />
-      </div>
-
-      {/* Social Protection Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Rimozioni Social"
-          value={`${socialRemovalRate}%`}
-          subtitle={`${removedSocialReports.length} rimosse`}
-          icon={CheckCircle}
-          color="emerald"
-        />
-        <StatsCard
-          title="Tempo Medio Rimozione Social"
-          value={`${avgSocialRemovalTime}g`}
-          subtitle="dalla segnalazione"
-          icon={Clock}
-          color="blue"
-        />
-        <StatsCard
-          title="Creator ad Alto Rischio"
-          value={creatorsWithHighImpersonation.length}
-          subtitle=">3 impersonificazioni"
-          icon={AlertTriangle}
-          color="amber"
-        />
-        <EconomicLossCard creators={creators} leaks={leaks} domains={domains} />
       </div>
 
       {/* Charts Row */}
