@@ -215,8 +215,7 @@ export default function Pipeline() {
                                         </Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
-                                        <DropdownMenuItem><Eye className="w-3 h-3 mr-2" />Dettagli</DropdownMenuItem>
-                                        <DropdownMenuItem><Send className="w-3 h-3 mr-2" />Invia DMCA</DropdownMenuItem>
+                                      <DropdownMenuItem><Eye className="w-3 h-3 mr-2" />Dettagli</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
