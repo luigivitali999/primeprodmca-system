@@ -52,19 +52,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import StatsCard from '@/components/dashboard/StatsCard';
+import { T, cardStyle } from '@/components/utils/theme';
 
-const RESPONSE_COLORS = {
-  excellent: 'bg-emerald-100 text-emerald-700',
-  good: 'bg-blue-100 text-blue-700',
-  poor: 'bg-amber-100 text-amber-700',
-  unresponsive: 'bg-red-100 text-red-700',
-};
-
-const RESPONSE_LABELS = {
-  excellent: 'Eccellente',
-  good: 'Buona',
-  poor: 'Scarsa',
-  unresponsive: 'Non Risponde',
+const RESPONSE_CFG = {
+  excellent:    { label: 'Eccellente',    color: '#34d399', bg: 'rgba(52,211,153,0.15)' },
+  good:         { label: 'Buona',         color: '#60a5fa', bg: 'rgba(96,165,250,0.15)' },
+  poor:         { label: 'Scarsa',        color: '#fbbf24', bg: 'rgba(251,191,36,0.15)' },
+  unresponsive: { label: 'Non Risponde',  color: '#f87171', bg: 'rgba(239,68,68,0.15)' },
 };
 
 export default function Domains() {
