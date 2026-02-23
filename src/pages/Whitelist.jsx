@@ -56,14 +56,14 @@ import { T, cardStyle } from '@/components/utils/theme';
 const CONTENT_TYPES = ['video', 'gallery', 'mega', 'torrent', 'forum', 'telegram', 'other'];
 
 const STATUS_CONFIG = {
-  active: { label: 'Attiva', className: 'bg-emerald-100 text-emerald-700' },
-  expired: { label: 'Scaduta', className: 'bg-amber-100 text-amber-700' },
-  revoked: { label: 'Revocata', className: 'bg-red-100 text-red-700' },
+  active:  { label: 'Attiva',   color: '#34d399', bg: 'rgba(16,185,129,0.12)' },
+  expired: { label: 'Scaduta',  color: '#fbbf24', bg: 'rgba(251,191,36,0.12)' },
+  revoked: { label: 'Revocata', color: '#f87171', bg: 'rgba(239,68,68,0.12)' },
 };
 
 const SCOPE_CONFIG = {
-  global: { label: 'Globale', className: 'bg-blue-100 text-blue-700' },
-  creator_specific: { label: 'Per Creator', className: 'bg-purple-100 text-purple-700' },
+  global:           { label: 'Globale',     color: '#60a5fa', bg: 'rgba(59,130,246,0.12)' },
+  creator_specific: { label: 'Per Creator', color: '#c084fc', bg: 'rgba(168,85,247,0.12)' },
 };
 
 const EMPTY_FORM = {
