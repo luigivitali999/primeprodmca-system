@@ -506,7 +506,7 @@ export default function Whitelist() {
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} style={{ color: T.text, borderColor: 'rgba(99,102,241,0.2)' }}>
                 Annulla
               </Button>
               <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
