@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Upload, CheckCircle2, Loader2 } from 'lucide-react';
-import { T } from '@/lib/theme';
+import { T } from '@/components/utils/theme';
 
 export default function DocUploadField({ label, value, onChange, required = false }) {
   const [uploading, setUploading] = useState(false);

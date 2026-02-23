@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingDown } from 'lucide-react';
-import { T, VMC_TIER, calcEstimatedLoss } from '@/lib/theme';
+import { T, VMC_TIER, calcEstimatedLoss } from '@/components/utils/theme';
 
 export default function EconomicLossCard({ creators = [], leaks = [], domains = [] }) {
   // Total estimated loss across all creators

@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cardStyle, T } from '@/lib/theme';
+import { cardStyle, T } from '@/components/utils/theme';
 
 const PRIORITY_CONFIG = {
   low:      { label: 'Bassa',   color: '#94a3b8', bg: 'rgba(100,116,139,0.15)' },
