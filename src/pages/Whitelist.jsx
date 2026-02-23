@@ -413,11 +413,12 @@ export default function Whitelist() {
             </div>
 
             <div className="space-y-2">
-              <Label>URL Profilo</Label>
+              <Label style={{ color: T.text }}>URL Profilo</Label>
               <Input
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                 placeholder="https://..."
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
               />
             </div>
 
