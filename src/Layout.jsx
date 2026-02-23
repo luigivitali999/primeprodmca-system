@@ -92,11 +92,12 @@ export default function Layout({ children, currentPageName }) {
       {/* Sidebar Desktop */}
       <aside className="fixed inset-y-0 left-0 z-50 w-64 hidden lg:flex lg:flex-col" style={{ background: '#0a1120', borderRight: '1px solid rgba(99,102,241,0.12)' }}>
         {/* Logo */}
-        <div className="flex h-16 items-center gap-3 px-6" style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+        <div className="flex h-16 items-center justify-center px-6" style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699995b8a47373b45af3f884/e251c5f20_Logoelegante_PRIMEPRO_susfondonero.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699995b8a47373b45af3f884/1564c15ea_Logosocial.jpg"
             alt="PRIME PRO"
-            className="h-12 object-contain"
+            className="h-10 object-contain"
+            style={{ backgroundColor: 'transparent' }}
           />
         </div>
 
