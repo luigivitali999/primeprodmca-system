@@ -194,10 +194,10 @@ export default function Whitelist() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-10 w-40" />
+          <Skeleton className="h-8 w-48" style={{ background: 'rgba(99,102,241,0.1)' }} />
+          <Skeleton className="h-10 w-40" style={{ background: 'rgba(99,102,241,0.1)' }} />
         </div>
-        <Skeleton className="h-96 rounded-xl" />
+        <Skeleton className="h-96 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)' }} />
       </div>
     );
   }
@@ -207,14 +207,14 @@ export default function Whitelist() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Whitelist Siti</h1>
-          <p className="text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>Whitelist Siti</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>
             {activeCount} siti autorizzati · {globalCount} autorizzazioni globali
           </p>
         </div>
         <Button
           onClick={() => { setFormData(EMPTY_FORM); setEditingEntry(null); setIsDialogOpen(true); }}
-          className="bg-blue-600 hover:bg-blue-700"
+          style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}
         >
           <Plus className="w-4 h-4 mr-2" />
           Aggiungi Sito
@@ -224,19 +224,20 @@ export default function Whitelist() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: T.textMuted }} />
           <Input
             placeholder="Cerca per dominio, piattaforma o creator..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
+            style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
           />
         </div>
         <Select value={creatorFilter} onValueChange={setCreatorFilter}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="w-full sm:w-48" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Creator" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti i creator</SelectItem>
             {creators.map(c => (
               <SelectItem key={c.id} value={c.id}>{c.stage_name}</SelectItem>
@@ -244,10 +245,10 @@ export default function Whitelist() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-40">
+          <SelectTrigger className="w-full sm:w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Stato" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti</SelectItem>
             <SelectItem value="active">Attiva</SelectItem>
             <SelectItem value="expired">Scaduta</SelectItem>
@@ -257,13 +258,12 @@ export default function Whitelist() {
       </div>
 
       {/* Table */}
-      <Card className="bg-white border-0 shadow-sm">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50">
-                  <TableHead>Dominio / Piattaforma</TableHead>
+      <div style={{ ...cardStyle, overflow: 'hidden' }}>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+                <TableHead style={{ color: T.textMuted, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', background: '#0a1120' }}>Dominio / Piattaforma
                   <TableHead>Creator</TableHead>
                   <TableHead>Scope</TableHead>
                   <TableHead>Contenuti Permessi</TableHead>
