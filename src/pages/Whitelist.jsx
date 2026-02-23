@@ -479,7 +479,7 @@ export default function Whitelist() {
             </div>
 
             <div className="space-y-2">
-              <Label>Tipi Contenuto Permessi</Label>
+              <Label style={{ color: T.text }}>Tipi Contenuto Permessi</Label>
               <div className="flex flex-wrap gap-2 mt-1">
                 {CONTENT_TYPES.map(type => (
                   <label key={type} className="flex items-center gap-1.5 cursor-pointer">
@@ -487,11 +487,11 @@ export default function Whitelist() {
                       checked={(formData.content_types_allowed || []).includes(type)}
                       onCheckedChange={() => toggleContentType(type)}
                     />
-                    <span className="text-sm capitalize">{type}</span>
+                    <span className="text-sm capitalize" style={{ color: T.text }}>{type}</span>
                   </label>
                 ))}
               </div>
-              <p className="text-xs text-slate-500">Nessuna selezione = tutti i tipi</p>
+              <p className="text-xs" style={{ color: T.textMuted }}>Nessuna selezione = tutti i tipi</p>
             </div>
 
             <div className="space-y-2">
