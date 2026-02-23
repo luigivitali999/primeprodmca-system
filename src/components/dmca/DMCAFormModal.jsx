@@ -121,18 +121,12 @@ export default function DMCAFormModal({ open, onOpenChange, leak, formUrl, notic
           {/* Step 2 */}
           <div className="rounded-lg p-3 space-y-2" style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)' }}>
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a5b4fc' }}>
-              Step 2 — Apri il form e incolla il testo
+              Step 2 — Il form si apre automaticamente
             </p>
-            {formUrl ? (
-              <Button size="sm" asChild
-                style={{ background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', color: '#60a5fa' }}>
-                <a href={formUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-3.5 h-3.5 mr-1" />Apri Form DMCA
-                </a>
-              </Button>
-            ) : (
+            <p className="text-xs" style={{ color: '#94a3b8' }}>Copia il testo dal campo sopra, incollalo nel form che si è appena aperto.</p>
+            {!formUrl && (
               <p className="text-xs" style={{ color: '#f87171' }}>
-                URL del form non configurato. Aggiungilo nel campo "Contatto DMCA" in Domain Intelligence.
+                ⚠️ URL del form non configurato. Aggiungilo nel campo "dmca_contact" in Domain Intelligence.
               </p>
             )}
           </div>
