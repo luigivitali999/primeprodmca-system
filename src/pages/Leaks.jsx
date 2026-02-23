@@ -53,6 +53,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { T, cardStyle, STATUS_DARK } from '@/components/utils/theme';
+import SendDMCAButton from '@/components/dmca/SendDMCAButton';
 
 const STATUS_LABELS = {
   found: 'Trovato', notice_sent: 'Notice Inviata', waiting: 'In Attesa',

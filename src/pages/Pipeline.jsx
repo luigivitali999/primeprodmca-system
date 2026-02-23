@@ -33,6 +33,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { T } from '@/components/utils/theme';
+import SendDMCAButton from '@/components/dmca/SendDMCAButton';
 
 const COLUMNS = [
   { id: 'found',       label: 'Trovati',       dot: '#f87171' },
