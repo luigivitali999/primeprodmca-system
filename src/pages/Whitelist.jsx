@@ -459,19 +459,21 @@ export default function Whitelist() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Data Autorizzazione</Label>
+                <Label style={{ color: T.text }}>Data Autorizzazione</Label>
                 <Input
                   type="date"
                   value={formData.authorization_date}
                   onChange={(e) => setFormData({ ...formData, authorization_date: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Scadenza (opzionale)</Label>
+                <Label style={{ color: T.text }}>Scadenza (opzionale)</Label>
                 <Input
                   type="date"
                   value={formData.expiry_date}
                   onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
                 />
               </div>
             </div>
