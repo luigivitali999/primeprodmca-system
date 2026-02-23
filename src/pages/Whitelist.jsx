@@ -51,6 +51,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { T, cardStyle } from '@/components/utils/theme';
 
 const CONTENT_TYPES = ['video', 'gallery', 'mega', 'torrent', 'forum', 'telegram', 'other'];
 
