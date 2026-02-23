@@ -168,12 +168,12 @@ export default function Creators() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-10 w-36" />
+          <Skeleton className="h-8 w-32" style={{ background: 'rgba(99,102,241,0.1)' }} />
+          <Skeleton className="h-10 w-36" style={{ background: 'rgba(99,102,241,0.1)' }} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-48 rounded-xl" />
+            <Skeleton key={i} className="h-48 rounded-xl" style={{ background: 'rgba(99,102,241,0.1)' }} />
           ))}
         </div>
       </div>
@@ -185,12 +185,12 @@ export default function Creators() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Creators</h1>
-          <p className="text-slate-500 mt-1">{creators.length} creator gestiti</p>
+          <h1 className="text-2xl font-bold" style={{ color: T.text }}>Creators</h1>
+          <p style={{ color: T.textMuted, fontSize: 14, marginTop: 2 }}>{creators.length} creator gestiti</p>
         </div>
         <Button 
           onClick={() => { resetForm(); setIsDialogOpen(true); }}
-          className="bg-blue-600 hover:bg-blue-700"
+          style={{ background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none' }}
         >
           <Plus className="w-4 h-4 mr-2" />
           Nuovo Creator
@@ -200,19 +200,20 @@ export default function Creators() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: T.textMuted }} />
           <Input
             placeholder="Cerca per nome o email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
+            style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-40">
+          <SelectTrigger className="w-full sm:w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Stato" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti gli stati</SelectItem>
             <SelectItem value="active">Attivo</SelectItem>
             <SelectItem value="inactive">Inattivo</SelectItem>
@@ -220,10 +221,10 @@ export default function Creators() {
           </SelectContent>
         </Select>
         <Select value={riskFilter} onValueChange={setRiskFilter}>
-          <SelectTrigger className="w-full sm:w-40">
+          <SelectTrigger className="w-full sm:w-40" style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
             <SelectValue placeholder="Rischio" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
             <SelectItem value="all">Tutti i livelli</SelectItem>
             <SelectItem value="critical">Critico</SelectItem>
             <SelectItem value="high">Alto</SelectItem>
@@ -235,99 +236,111 @@ export default function Creators() {
 
       {/* Creators Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredCreators.map((creator) => (
-          <Card key={creator.id} className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="p-5">
+        {filteredCreators.map((creator) => {
+          const risk = RISK_DARK[creator.risk_level] || RISK_DARK.low;
+          const estimatedLoss = creator.estimated_loss || 0;
+          const docComplete = creator.doc_front_url && creator.doc_back_url && creator.doc_selfie_url;
+          return (
+            <div key={creator.id} style={{ ...cardStyle, padding: 20 }} className="transition-all hover:border-indigo-500/30">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600">
-                    <AvatarFallback className="text-white font-semibold">
+                  <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg,#4f46e5,#3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>
                       {creator.stage_name?.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                    </span>
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">{creator.stage_name}</h3>
-                    <p className="text-sm text-slate-500">{creator.email}</p>
+                    <h3 className="font-semibold" style={{ color: T.text }}>{creator.stage_name}</h3>
+                    <p className="text-sm" style={{ color: T.textMuted }}>{creator.email}</p>
                   </div>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl(`CreatorDetail?id=${creator.id}`)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Visualizza
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleEdit(creator)}>
-                      <Edit className="w-4 h-4 mr-2" />
-                      Modifica
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => deleteMutation.mutate(creator.id)}
-                      className="text-red-600"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Elimina
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center gap-1">
+                  {docComplete ? (
+                    <ShieldCheck className="w-4 h-4" style={{ color: '#34d399' }} title="Documenti verificati" />
+                  ) : (
+                    <ShieldAlert className="w-4 h-4" style={{ color: '#fbbf24' }} title="Documenti mancanti" />
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/5">
+                        <MoreVertical className="w-4 h-4" style={{ color: T.textMuted }} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl(`CreatorDetail?id=${creator.id}`)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          Visualizza
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleEdit(creator)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Modifica
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => deleteMutation.mutate(creator.id)} className="text-red-400">
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Elimina
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Risk Score</span>
+                  <span className="text-sm" style={{ color: T.textMuted }}>Risk Score 2.0</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900">
+                    <span className="text-sm font-bold" style={{ color: risk.color }}>
                       {Math.round(creator.risk_score || 0)}
                     </span>
-                    <Badge variant="outline" className={`text-xs ${RISK_COLORS[creator.risk_level] || RISK_COLORS.low}`}>
-                      {RISK_LABELS[creator.risk_level] || 'N/D'}
-                    </Badge>
+                    <span style={{ background: risk.bg, color: risk.color, border: `1px solid ${risk.border}`, padding: '1px 8px', borderRadius: 5, fontSize: 11, fontWeight: 600 }}>
+                      {risk.label}
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Leak Attivi</span>
-                  <span className="text-sm font-semibold text-slate-900 flex items-center gap-1">
+                  <span className="text-sm" style={{ color: T.textMuted }}>Leak Attivi</span>
+                  <span className="text-sm font-semibold flex items-center gap-1" style={{ color: T.text }}>
                     {creator.active_leaks || 0}
                     {(creator.active_leaks || 0) > 5 && (
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                      <AlertTriangle className="w-3.5 h-3.5" style={{ color: '#fbbf24' }} />
                     )}
                   </span>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-slate-500">Tasso Rimozione</span>
-                    <span className="text-sm font-semibold text-slate-900">
+                    <span className="text-sm" style={{ color: T.textMuted }}>Tasso Rimozione</span>
+                    <span className="text-sm font-semibold" style={{ color: T.text }}>
                       {Math.round(creator.removal_rate || 0)}%
                     </span>
                   </div>
-                  <Progress value={creator.removal_rate || 0} className="h-1.5" />
+                  <div style={{ height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ width: `${creator.removal_rate || 0}%`, height: '100%', background: 'linear-gradient(90deg,#6366f1,#10b981)', borderRadius: 2, transition: 'width 0.5s' }} />
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                  <span className="text-sm text-slate-500">Revenue Mensile</span>
-                  <span className="text-sm font-semibold text-slate-900">
-                    €{(creator.monthly_revenue || 0).toLocaleString()}
+                <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid rgba(99,102,241,0.1)' }}>
+                  <span className="text-sm flex items-center gap-1" style={{ color: '#f87171' }}>
+                    <TrendingDown className="w-3.5 h-3.5" />
+                    Perdita Stimata
+                  </span>
+                  <span className="text-sm font-bold" style={{ color: '#f87171' }}>
+                    €{estimatedLoss >= 1000 ? `${(estimatedLoss/1000).toFixed(1)}k` : Math.round(estimatedLoss)}
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          );
+        })}
       </div>
 
       {filteredCreators.length === 0 && (
         <div className="text-center py-12">
-          <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-slate-900 mb-1">Nessun creator trovato</h3>
-          <p className="text-slate-500">Prova a modificare i filtri o aggiungi un nuovo creator</p>
+          <Users className="w-12 h-12 mx-auto mb-4" style={{ color: 'rgba(99,102,241,0.3)' }} />
+          <h3 className="text-lg font-medium" style={{ color: T.text }}>Nessun creator trovato</h3>
+          <p style={{ color: T.textMuted }}>Prova a modificare i filtri o aggiungi un nuovo creator</p>
         </div>
       )}
 
