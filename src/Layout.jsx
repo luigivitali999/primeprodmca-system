@@ -69,6 +69,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Domini', page: 'Domains', icon: Globe },
     { name: 'Whitelist', page: 'Whitelist', icon: ShieldCheck },
     { name: 'Ordini Diretti', page: 'DirectOrders', icon: Zap },
+    { name: 'Approvazioni', page: 'PendingApprovals', icon: Clock },
     { name: 'Report', page: 'Reports', icon: BarChart3 },
   ];
 
