@@ -423,15 +423,15 @@ export default function Whitelist() {
             </div>
 
             <div className="space-y-2">
-              <Label>Scope</Label>
+              <Label style={{ color: T.text }}>Scope</Label>
               <Select
                 value={formData.scope}
                 onValueChange={(value) => setFormData({ ...formData, scope: value, creator_id: value === 'global' ? '' : formData.creator_id })}
               >
-                <SelectTrigger>
+                <SelectTrigger style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                   <SelectItem value="creator_specific">Per Creator Specifico</SelectItem>
                   <SelectItem value="global">Globale (tutti i creator)</SelectItem>
                 </SelectContent>
