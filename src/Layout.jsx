@@ -15,7 +15,8 @@ import {
   X,
   Shield,
   ShieldCheck,
-  Zap
+  Zap,
+  Clock
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
