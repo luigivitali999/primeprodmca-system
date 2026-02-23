@@ -52,32 +52,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const STATUS_COLORS = {
-  found: 'bg-red-100 text-red-700',
-  notice_sent: 'bg-amber-100 text-amber-700',
-  waiting: 'bg-blue-100 text-blue-700',
-  follow_up: 'bg-purple-100 text-purple-700',
-  escalated: 'bg-pink-100 text-pink-700',
-  removed: 'bg-emerald-100 text-emerald-700',
-  rejected: 'bg-slate-100 text-slate-700',
-};
+import { T, cardStyle, STATUS_DARK } from '@/components/utils/theme';
 
 const STATUS_LABELS = {
-  found: 'Trovato',
-  notice_sent: 'Notice Inviata',
-  waiting: 'In Attesa',
-  follow_up: 'Follow-up',
-  escalated: 'Escalation',
-  removed: 'Rimosso',
-  rejected: 'Rifiutato',
+  found: 'Trovato', notice_sent: 'Notice Inviata', waiting: 'In Attesa',
+  follow_up: 'Follow-up', escalated: 'Escalation', removed: 'Rimosso', rejected: 'Rifiutato',
 };
 
-const SEVERITY_COLORS = {
-  critical: 'bg-red-100 text-red-700 border-red-200',
-  high: 'bg-amber-100 text-amber-700 border-amber-200',
-  medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  low: 'bg-slate-100 text-slate-700 border-slate-200',
+const SEVERITY_CFG = {
+  critical: { color: '#f87171', bg: 'rgba(239,68,68,0.15)' },
+  high:     { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)' },
+  medium:   { color: '#eab308', bg: 'rgba(234,179,8,0.15)' },
+  low:      { color: '#94a3b8', bg: 'rgba(100,116,139,0.15)' },
 };
 
 export default function Leaks() {
