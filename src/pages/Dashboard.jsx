@@ -41,7 +41,12 @@ export default function Dashboard() {
     queryFn: () => base44.entities.DMCARequest.list('-created_date', 500),
   });
 
-  const isLoading = leaksLoading || creatorsLoading || domainsLoading || dmcaLoading;
+  const { data: socialReports = [], isLoading: socialLoading } = useQuery({
+    queryKey: ['social-reports-dashboard'],
+    queryFn: () => base44.entities.SocialReport.list('-created_date', 500),
+  });
+
+  const isLoading = leaksLoading || creatorsLoading || domainsLoading || dmcaLoading || socialLoading;
   const domains = domainsFetch;
 
   // Calculate stats
@@ -53,6 +58,18 @@ export default function Dashboard() {
   const avgRemovalTime = removedLeaks.length > 0
     ? Math.round(removedLeaks.reduce((acc, l) => acc + (l.days_online || 0), 0) / removedLeaks.length)
     : 0;
+
+  const activeSocialReports = socialReports.filter(r => ['Segnalato', 'In attesa', 'Escalation'].includes(r.status));
+  const removedSocialReports = socialReports.filter(r => r.status === 'Rimosso');
+  const socialRemovalRate = socialReports.length > 0 ? Math.round((removedSocialReports.length / socialReports.length) * 100) : 0;
+
+  const avgSocialRemovalTime = removedSocialReports.length > 0
+    ? Math.round(removedSocialReports.reduce((acc, r) => acc + (r.days_online || 0), 0) / removedSocialReports.length)
+    : 0;
+
+  const creatorsWithHighImpersonation = creators.filter(c => 
+    socialReports.filter(r => r.creator_id === c.id && ['Segnalato', 'In attesa', 'Escalation'].includes(r.status)).length > 3
+  );
 
   if (isLoading) {
     return (
@@ -129,6 +146,37 @@ export default function Dashboard() {
           value={dmcaRequests.length}
           icon={FileText}
           color="blue"
+        />
+        <StatsCard
+          title="Impersonificazioni Attive"
+          value={activeSocialReports.length}
+          icon={AlertTriangle}
+          color="red"
+        />
+      </div>
+
+      {/* Social Protection Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Rimozioni Social"
+          value={`${socialRemovalRate}%`}
+          subtitle={`${removedSocialReports.length} rimosse`}
+          icon={CheckCircle}
+          color="emerald"
+        />
+        <StatsCard
+          title="Tempo Medio Rimozione Social"
+          value={`${avgSocialRemovalTime}g`}
+          subtitle="dalla segnalazione"
+          icon={Clock}
+          color="blue"
+        />
+        <StatsCard
+          title="Creator ad Alto Rischio"
+          value={creatorsWithHighImpersonation.length}
+          subtitle=">3 impersonificazioni"
+          icon={AlertTriangle}
+          color="amber"
         />
         <EconomicLossCard creators={creators} leaks={leaks} domains={domains} />
       </div>

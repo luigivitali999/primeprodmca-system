@@ -66,6 +66,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Leaks', page: 'Leaks', icon: AlertTriangle },
     { name: 'DMCA Pipeline', page: 'Pipeline', icon: Kanban },
     { name: 'Richieste DMCA', page: 'DMCARequests', icon: FileText },
+    { name: 'Social Protection', page: 'SocialProtection', icon: ShieldCheck },
     { name: 'Domini', page: 'Domains', icon: Globe },
     { name: 'Whitelist', page: 'Whitelist', icon: ShieldCheck },
     { name: 'Ordini Diretti', page: 'DirectOrders', icon: Zap },
