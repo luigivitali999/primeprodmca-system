@@ -53,6 +53,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import StatsCard from '@/components/dashboard/StatsCard';
 import { T, cardStyle } from '@/components/utils/theme';
+import AbuseEmailLookup from '@/components/dmca/AbuseEmailLookup';
 
 const RESPONSE_CFG = {
   excellent:    { label: 'Eccellente',    color: '#34d399', bg: 'rgba(52,211,153,0.15)' },

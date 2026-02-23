@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
 import { Send, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import AbuseEmailLookup from '@/components/dmca/AbuseEmailLookup';
 
 /**
  * Button that triggers a DMCA sendout via the sendDMCA backend function.
