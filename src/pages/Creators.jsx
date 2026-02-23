@@ -47,19 +47,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const RISK_COLORS = {
-  critical: 'bg-red-100 text-red-700 border-red-200',
-  high: 'bg-amber-100 text-amber-700 border-amber-200',
-  medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  low: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-};
 
-const RISK_LABELS = {
-  critical: 'Critico',
-  high: 'Alto',
-  medium: 'Medio',
-  low: 'Basso',
-};
 
 export default function Creators() {
   const [searchTerm, setSearchTerm] = useState('');
