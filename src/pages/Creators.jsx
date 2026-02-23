@@ -268,16 +268,16 @@ export default function Creators() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl(`CreatorDetail?id=${creator.id}`)} style={{ color: T.text, cursor: 'pointer' }}>
+                        <Link to={createPageUrl(`CreatorDetail?id=${creator.id}`)}>
                           <Eye className="w-4 h-4 mr-2" />
                           Visualizza
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleEdit(creator)} style={{ color: T.text, cursor: 'pointer' }}>
+                      <DropdownMenuItem onClick={() => handleEdit(creator)}>
                         <Edit className="w-4 h-4 mr-2" />
                         Modifica
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => deleteMutation.mutate(creator.id)} style={{ color: '#f87171', cursor: 'pointer' }}>
+                      <DropdownMenuItem onClick={() => deleteMutation.mutate(creator.id)}>
                         <Trash2 className="w-4 h-4 mr-2" />
                         Elimina
                       </DropdownMenuItem>
