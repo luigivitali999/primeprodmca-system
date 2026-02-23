@@ -51,8 +51,12 @@ export default function Layout({ children, currentPageName }) {
 
   const loadAlerts = async () => {
     try {
-      const leaks = await base44.entities.Leak.filter({ severity: 'critical', status: 'found' });
+      const [leaks, pending] = await Promise.all([
+        base44.entities.Leak.filter({ severity: 'critical', status: 'found' }),
+        base44.entities.PendingApproval.filter({ status: 'pending' }),
+      ]);
       setCriticalLeaks(leaks.length);
+      setPendingApprovals(pending.length);
     } catch (e) {}
   };
 
