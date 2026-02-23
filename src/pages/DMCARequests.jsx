@@ -50,25 +50,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const STATUS_COLORS = {
-  pending: 'bg-slate-100 text-slate-700',
-  sent: 'bg-blue-100 text-blue-700',
-  acknowledged: 'bg-purple-100 text-purple-700',
-  processing: 'bg-amber-100 text-amber-700',
-  completed: 'bg-emerald-100 text-emerald-700',
-  rejected: 'bg-red-100 text-red-700',
-  escalated: 'bg-pink-100 text-pink-700',
-};
+import { T, cardStyle, STATUS_DARK } from '@/components/utils/theme';
 
 const STATUS_LABELS = {
-  pending: 'In Attesa',
-  sent: 'Inviata',
-  acknowledged: 'Ricevuta',
-  processing: 'In Elaborazione',
-  completed: 'Completata',
-  rejected: 'Rifiutata',
-  escalated: 'Escalation',
+  pending: 'In Attesa', sent: 'Inviata', acknowledged: 'Ricevuta',
+  processing: 'In Elaborazione', completed: 'Completata',
+  rejected: 'Rifiutata', escalated: 'Escalation',
 };
 
 export default function DMCARequests() {
