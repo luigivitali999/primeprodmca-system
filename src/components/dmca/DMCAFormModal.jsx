@@ -42,6 +42,13 @@ export default function DMCAFormModal({ open, onOpenChange, leak, formUrl, notic
   const [copied, setCopied] = useState(false);
   const [marking, setMarking] = useState(false);
   const [marked, setMarked] = useState(false);
+  const [notes, setNotes] = useState('');
+
+  React.useEffect(() => {
+    if (formUrl && open) {
+      window.open(formUrl, '_blank');
+    }
+  }, [formUrl, open]);
 
   const noticeText = buildNoticeText({
     noticeNumber,
