@@ -134,15 +134,24 @@ export default function DMCAFormModal({ open, onOpenChange, leak, formUrl, notic
           {/* Step 3 */}
           <div className="rounded-lg p-3 space-y-2" style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)' }}>
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#34d399' }}>
-              Step 3 — Dopo aver inviato il form, registra l'invio
+              Step 3 — Registra l'invio nel sistema
             </p>
-            <Button size="sm" onClick={handleMarkSent} disabled={marking || marked}
-              style={{ background: marked ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
-              {marked
-                ? <><CheckCircle className="w-3.5 h-3.5 mr-1" />Registrata come Inviata ✓</>
-                : <><ClipboardCheck className="w-3.5 h-3.5 mr-1" />{marking ? 'Salvataggio...' : 'Segna come Inviata'}</>
-              }
-            </Button>
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Note opzionali: es. form ID, screenshot allegati, stato richiesta..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={2}
+                style={{ background: '#080e1a', border: '1px solid rgba(16,185,129,0.2)', color: '#e2e8f0' }}
+              />
+              <Button size="sm" onClick={handleMarkSent} disabled={marking || marked}
+                style={{ background: marked ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
+                {marked
+                  ? <><CheckCircle className="w-3.5 h-3.5 mr-1" />Registrata come Inviata ✓</>
+                  : <><ClipboardCheck className="w-3.5 h-3.5 mr-1" />{marking ? 'Salvataggio...' : 'Segna come Inviata'}</>
+                }
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
