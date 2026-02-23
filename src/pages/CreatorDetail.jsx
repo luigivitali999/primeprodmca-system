@@ -163,7 +163,7 @@ export default function CreatorDetail() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
-          title="Risk Score"
+           title="Risk Score"
           value={Math.round(creator.risk_score || 0)}
           icon={AlertTriangle}
           color={creator.risk_level === 'critical' ? 'red' : creator.risk_level === 'high' ? 'amber' : 'emerald'}

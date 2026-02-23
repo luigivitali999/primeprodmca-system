@@ -288,7 +288,7 @@ export default function Creators() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm" style={{ color: T.textMuted }}>Risk Score 2.0</span>
+                  <span className="text-sm" style={{ color: T.textMuted }}>Risk Score</span>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold" style={{ color: risk.color }}>
                       {Math.round(creator.risk_score || 0)}
