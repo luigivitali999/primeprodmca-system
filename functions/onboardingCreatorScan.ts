@@ -258,20 +258,29 @@ Deno.serve(async (req) => {
     const uniqueResults = Array.from(dedupMap.values());
     console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results`);
 
-    // ─── 3. CLASSIFY ALL RESULTS WITH AI ──────────────────────────────────
-    const classified = await classifyAllResults(
-      stageName,
-      stageName,
-      legalName,
-      uniqueResults,
-      knownDomainMap,
-      base44
-    );
+    // ─── 3. SKIP AI CLASSIFICATION (TEMPORARY - DISABLED FOR STABILITY) ──────────────────────────────────
+    // Use simple domain-based classification instead
+    const classificationMap = new Map();
+    for (const result of uniqueResults) {
+      const domain = result.domain;
+      const isKnownDomain = knownDomainMap.has(domain);
+      
+      // Simple heuristic: if known domain, mark as leak; otherwise uncertain
+      let classification = "false_positive";
+      if (isKnownDomain) {
+        classification = "leak";
+      } else if (result.snippet && (result.snippet.toLowerCase().includes("leak") || result.snippet.toLowerCase().includes("free"))) {
+        classification = "uncertain";
+      }
+      
+      classificationMap.set(result.url, {
+        classification,
+        confidence: isKnownDomain ? "high" : "low",
+        reasoning: isKnownDomain ? "Known domain" : "Snippet analysis",
+      });
+    }
 
-    console.log(`[SCAN] AI classification complete`);
-
-    // ─── 4. CREATE CLASSIFICATION MAP ────────────────────────────────────
-    const classificationMap = new Map(classified.map(c => [c.url, c]));
+    console.log(`[SCAN] Classification complete (domain-based heuristic, AI disabled for stability)`);
 
     // ─── 5. PROCESS RESULTS + SAVE SCANLOG ──────────────────────────────
     const [existingLeaks, existingPending] = await Promise.all([
