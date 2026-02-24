@@ -250,7 +250,8 @@ Include ALL results with confidence medium or high. Max 15 results.`,
     const domain = result.domain.toLowerCase().replace(/^www\./, "");
     if (whitelistDomains.has(domain)) continue;
     if (existingLeakUrls.has(result.url) || existingPendingUrls.has(result.url)) continue;
-    if (knownDomains.has(domain)) continue;
+    // NON saltare i domini noti - vengono già scansionati da scanKnownDomains
+    // Qui li includiamo comunque se trovati dalla ricerca libera e non già presenti come leak
 
     await base44.asServiceRole.entities.PendingApproval.create({
       creator_id: creator.id,
