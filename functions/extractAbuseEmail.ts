@@ -73,10 +73,14 @@ Deno.serve(async (req) => {
           // Step 4: Use AI to extract email from DMCA/Legal page
           console.log(`[ABUSE EMAIL] Extracting email from DMCA page`);
           
-          // Try to extract email with regex first
-          const emailMatch = pageHtml.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+          // Try to extract email with regex first (multiple patterns)
+          let emailMatch = pageHtml.match(/notice@dmcanow\.io/i);
+          if (!emailMatch) {
+            emailMatch = pageHtml.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+          }
+          
           if (emailMatch) {
-            abuseEmail = emailMatch[1];
+            abuseEmail = Array.isArray(emailMatch) ? (emailMatch[1] || emailMatch[0]) : emailMatch[0];
             console.log(`[ABUSE EMAIL] Found email via regex: ${abuseEmail}`);
           } else {
             // Fall back to LLM with full HTML
