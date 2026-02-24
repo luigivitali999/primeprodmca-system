@@ -92,11 +92,13 @@ export default function Whitelist() {
   const { data: entries = [], isLoading } = useQuery({
     queryKey: ['whitelist'],
     queryFn: () => base44.entities.Whitelist.list('-created_date', 500),
+    staleTime: 60000,
   });
 
   const { data: creators = [] } = useQuery({
     queryKey: ['creators'],
     queryFn: () => base44.entities.Creator.list('-created_date', 200),
+    staleTime: 60000,
   });
 
   const createMutation = useMutation({

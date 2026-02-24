@@ -84,12 +84,14 @@ export default function Domains() {
 
   const { data: domains = [], isLoading } = useQuery({
     queryKey: ['domains'],
-    queryFn: () => base44.entities.DomainIntelligence.list('-total_leaks', 500),
+    queryFn: () => base44.entities.DomainIntelligence.list('-total_leaks', 200),
+    staleTime: 60000,
   });
 
   const { data: allLeaks = [] } = useQuery({
     queryKey: ['leaks-for-domains'],
-    queryFn: () => base44.entities.Leak.list('-created_date', 2000),
+    queryFn: () => base44.entities.Leak.list('-created_date', 1000),
+    staleTime: 60000,
   });
 
   // Calcola statistiche live dai leak reali, sovrascrivendo i valori statici del dominio
