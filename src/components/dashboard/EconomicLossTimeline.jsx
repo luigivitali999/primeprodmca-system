@@ -70,7 +70,8 @@ export default function EconomicLossTimeline({ leaks, creators, domains }) {
           const creator = creators.find(c => c.id === leak.creator_id);
           const domain = domains.find(d => d.domain_name === leak.domain);
           if (creator) {
-            const vmc = creator.content_value || 25;
+            const VMC_TIER = { low: 12, medium: 25, high: 60, vip: 130 };
+            const vmc = creator.content_value || VMC_TIER[creator.creator_tier] || 25;
             const fdd = domain?.diffusion_factor || 1.0;
             const daysOnline = leak.days_online || 1;
             const iit = 1 + (daysOnline / 30) * 0.15;

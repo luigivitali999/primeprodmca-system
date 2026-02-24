@@ -119,7 +119,7 @@ export default function Dashboard() {
         />
         <StatsCard
           title="Perdita Stimata"
-          value={`€${(creators.reduce((sum, c) => sum + (c.estimated_loss || 0), 0) / 1000).toFixed(0)}k`}
+          value={`$${(creators.reduce((sum, c) => sum + (c.estimated_loss || 0), 0) / 1000).toFixed(1)}k`}
           subtitle="accumulata"
           icon={TrendingUp}
           color="red"
