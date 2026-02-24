@@ -35,7 +35,7 @@ const CustomTooltip = ({ active, payload, label }) => {
             fontSize: 14,
             color: '#f87171',
           }}>
-            €{(entry.value / 1000).toFixed(1)}k
+            ${(entry.value / 1000).toFixed(1)}k
           </span>
         </div>
       ))}
@@ -98,7 +98,7 @@ export default function EconomicLossTimeline({ leaks, creators, domains }) {
             PERDITA ECONOMICA ULTIMI 30 GIORNI
           </CardTitle>
           <div style={{ color: '#94a3b8', fontSize: 12 }}>
-            €{(totalLoss / 1000).toFixed(1)}k cumulativa
+            ${(totalLoss / 1000).toFixed(1)}k cumulativa
           </div>
         </div>
       </CardHeader>
@@ -125,7 +125,7 @@ export default function EconomicLossTimeline({ leaks, creators, domains }) {
                 tickLine={false}
                 axisLine={false}
                 width={40}
-                formatter={(value) => `€${(value / 1000).toFixed(0)}k`}
+                formatter={(value) => `$${(value / 1000).toFixed(0)}k`}
               />
               <Tooltip
                 content={<CustomTooltip />}
