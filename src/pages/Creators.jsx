@@ -126,12 +126,16 @@ export default function Creators() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Extract OF username to build avatar URL
-    let profileImage = formData.profile_image || '';
-    if (formData.onlyfans_url && !profileImage) {
+    // Extract OF username to build avatar initials-based placeholder
+    // OnlyFans avatars require auth — use ui-avatars as fallback with stage name
+    const existingProfileImage = editingCreator?.profile_image || '';
+    let profileImage = existingProfileImage;
+    if (formData.onlyfans_url) {
       const match = formData.onlyfans_url.match(/onlyfans\.com\/([^/?#]+)/);
       if (match) {
-        profileImage = `https://img.onlyfans.com/media/post/header_mobile/${match[1]}`;
+        const username = match[1];
+        // Use a public avatar service with the OF username
+        profileImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.stage_name || username)}&background=6366f1&color=fff&size=128&bold=true`;
       }
     }
     const data = {
