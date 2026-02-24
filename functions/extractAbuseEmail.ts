@@ -79,23 +79,21 @@ Deno.serve(async (req) => {
             abuseEmail = emailMatch[1];
             console.log(`[ABUSE EMAIL] Found email via regex: ${abuseEmail}`);
           } else {
-            // Fall back to LLM
+            // Fall back to LLM with full HTML
+            console.log(`[ABUSE EMAIL] Using LLM to extract email`);
             const emailExtraction = await base44.integrations.Core.InvokeLLM({
-              prompt: `Find the abuse/DMCA contact email in this HTML. Look for any email address related to abuse, DMCA, copyright, or legal matters.
+              prompt: `Extract the abuse/DMCA contact email from this HTML page. Look for "Email:", "notice@", or any email mentioned in the content.
               
-HTML:
-${pageHtml.substring(0, 15000)}
-
-Return just the email address or null.`,
+${pageHtml}`,
               response_json_schema: {
                 type: "object",
                 properties: {
-                  email: { type: ["string", "null"] },
+                  email: { type: "string" },
                 },
               },
             });
 
-            if (emailExtraction.email && emailExtraction.email !== "null") {
+            if (emailExtraction.email) {
               abuseEmail = emailExtraction.email;
               console.log(`[ABUSE EMAIL] Found email via LLM: ${abuseEmail}`);
             }
