@@ -299,6 +299,26 @@ Deno.serve(async (req) => {
 
     console.log(`[ONBOARDING SCAN] Done. newLeaks=${newLeaks}, dmcaSent=${dmcaSent}, pendingApprovals=${pendingApprovals}`);
 
+    // Aggiorna statistiche creator
+    const allLeaks = await base44.asServiceRole.entities.Leak.filter({ creator_id: creatorId });
+    const activeLeaks = allLeaks.filter((l) => l.status !== "removed" && l.status !== "rejected");
+    const removedLeaks = allLeaks.filter((l) => l.status === "removed");
+    const totalLeaks = allLeaks.length;
+    const removalRate = totalLeaks > 0 ? Math.round((removedLeaks.length / totalLeaks) * 100) : 0;
+
+    // Calcolo risk score semplice
+    const riskScore = Math.min(Math.round((activeLeaks.length / Math.max(totalLeaks, 1)) * 50 + Math.min(activeLeaks.length * 5, 50)), 100);
+    const riskLevel = riskScore >= 81 ? "critical" : riskScore >= 61 ? "high" : riskScore >= 31 ? "medium" : "low";
+
+    await base44.asServiceRole.entities.Creator.update(creatorId, {
+      total_leaks: totalLeaks,
+      active_leaks: activeLeaks.length,
+      removed_leaks: removedLeaks.length,
+      removal_rate: removalRate,
+      risk_score: riskScore,
+      risk_level: riskLevel,
+    });
+
     return Response.json({ success: true, creatorId, newLeaks, dmcaSent, pendingApprovals });
   } catch (error) {
     console.error("[ONBOARDING SCAN] Error:", error.message);
