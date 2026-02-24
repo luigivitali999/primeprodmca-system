@@ -287,7 +287,7 @@ export default function DMCARequests() {
             </TableHeader>
             <TableBody>
               {filteredRequests.map((request) => {
-                const st = STATUS_DARK[request.status] || STATUS_DARK.pending;
+                const st = DMCA_STATUS_DARK[request.status] || DMCA_STATUS_DARK.pending;
                 return (
                   <TableRow key={request.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.06)' }} className="hover:bg-white/[0.02] transition-colors">
                     <TableCell className="font-mono text-sm font-medium" style={{ color: T.indigoSoft }}>
