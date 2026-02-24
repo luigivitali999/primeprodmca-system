@@ -87,6 +87,25 @@ export default function Domains() {
     queryFn: () => base44.entities.DomainIntelligence.list('-total_leaks', 500),
   });
 
+  const { data: allLeaks = [] } = useQuery({
+    queryKey: ['leaks-for-domains'],
+    queryFn: () => base44.entities.Leak.list('-created_date', 2000),
+  });
+
+  // Calcola statistiche live dai leak reali, sovrascrivendo i valori statici del dominio
+  const domainsWithLiveStats = domains.map(domain => {
+    const domainLeaks = allLeaks.filter(l => l.domain === domain.domain_name);
+    const removed = domainLeaks.filter(l => l.status === 'removed').length;
+    const total = domainLeaks.length;
+    const removalRate = total > 0 ? Math.round((removed / total) * 100) : 0;
+    return {
+      ...domain,
+      total_leaks: total || domain.total_leaks || 0,
+      total_removed: removed || domain.total_removed || 0,
+      removal_rate: total > 0 ? removalRate : (domain.removal_rate || 0),
+    };
+  }).sort((a, b) => b.total_leaks - a.total_leaks);
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.DomainIntelligence.create({
       ...data,
