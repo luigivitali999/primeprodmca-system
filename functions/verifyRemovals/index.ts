@@ -126,6 +126,19 @@ Deno.serve(async (req) => {
             await base44.asServiceRole.entities.Leak.update(leak.id, {
               status: "escalated",
             });
+            
+            // ─── UPDATE DOMAIN STATS (ESCALATION) ────────────────
+            try {
+              await base44.asServiceRole.functions.invoke("updateDomainStats", {
+                domain: leak.domain,
+                event_type: "escalation",
+                leak_id: leak.id,
+              });
+              console.log(`[VERIFY] Domain escalation count updated for ${leak.domain}`);
+            } catch (err) {
+              console.warn(`[VERIFY] Domain stats escalation update failed: ${err.message}`);
+            }
+
             results.followUp++;
           }
         }
