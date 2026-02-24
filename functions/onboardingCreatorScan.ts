@@ -1,5 +1,6 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.6";
 
+const SERPAPI_KEY = Deno.env.get("SERPAPI_KEY");
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
 const FROM_DOMAIN = "foryoulink.com";
 
@@ -75,6 +76,89 @@ async function sendDMCAEmail({ creatorName, creatorId, leakUrl, domain, abuseEma
   return true;
 }
 
+async function querySerpAPI(engine, query) {
+  console.log(`[SERPAPI] Querying ${engine}: "${query}"`);
+  
+  const params = new URLSearchParams({
+    api_key: SERPAPI_KEY,
+    q: query,
+    num: 30,
+  });
+
+  if (engine === "bing") {
+    params.set("engine", "bing");
+  } else {
+    params.set("engine", "google");
+  }
+
+  const res = await fetch(`https://serpapi.com/search?${params.toString()}`);
+  if (!res.ok) {
+    console.error(`[SERPAPI] Error for ${engine}: ${res.status} ${await res.text()}`);
+    return [];
+  }
+
+  const data = await res.json();
+  const results = data.organic_results || [];
+  console.log(`[SERPAPI] ${engine} returned ${results.length} results for: "${query}"`);
+  
+  return results.map(r => ({
+    url: r.link || "",
+    title: r.title || "",
+    snippet: r.snippet || "",
+    domain: cleanDomain(r.link) || "",
+  })).filter(r => r.url && r.domain);
+}
+
+async function classifyResults(creatorName, results, base44) {
+  if (!results.length) return [];
+
+  const jsonResults = results.map(r => ({
+    url: r.url,
+    title: r.title,
+    snippet: r.snippet,
+  })).slice(0, 20);
+
+  const prompt = `You are a DMCA investigator. Classify these search results for leaks of creator "${creatorName}".
+
+For each URL, determine if it's:
+- "leak": actual leaked/pirated content pages
+- "false_positive": legitimate site, fan page, news, social media, etc.
+- "uncertain": can't determine from title/snippet alone
+
+Results to classify:
+${jsonResults.map((r, i) => `${i + 1}. URL: ${r.url}\n   Title: ${r.title}\n   Snippet: ${r.snippet}`).join("\n\n")}
+
+Return JSON: array of {url, classification, confidence}. Only include results marked as "leak" or "uncertain".`;
+
+  try {
+    const aiRes = await base44.integrations.Core.InvokeLLM({
+      prompt,
+      add_context_from_internet: false,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          results: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                url: { type: "string" },
+                classification: { type: "string" },
+                confidence: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return (aiRes?.results || []).filter(r => r.classification !== "false_positive");
+  } catch (err) {
+    console.error(`[AI CLASSIFY] Error: ${err.message}`);
+    return [];
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type, Authorization" } });
@@ -87,7 +171,7 @@ Deno.serve(async (req) => {
 
     if (!creatorId) return Response.json({ error: "Missing creator_id" }, { status: 400 });
 
-    console.log(`[SCAN] Loading data for creator: ${creatorId}`);
+    console.log(`[SCAN] Starting scan for creator: ${creatorId}`);
 
     const [creator, domains, whitelist] = await Promise.all([
       base44.asServiceRole.entities.Creator.get(creatorId),
@@ -103,84 +187,96 @@ Deno.serve(async (req) => {
     const allNames = [...new Set([stageName, legalName, ...aliases].filter(Boolean))];
 
     console.log(`[SCAN] Creator: ${stageName} | Legal: ${legalName} | Aliases: ${aliases.join(", ") || "none"}`);
-    console.log(`[SCAN] Known domains: ${domains.length} | Whitelist: ${whitelist.length}`);
 
     const whitelistSet = new Set(whitelist.map(w => cleanDomain(w.domain)).filter(Boolean));
+    const knownDomainMap = new Map();
+    domains.forEach(d => { knownDomainMap.set(cleanDomain(d.domain_name), d); });
 
     const today = new Date().toISOString().split("T")[0];
     let newLeaks = 0;
     let dmcaSent = 0;
+    let pendingApprovals = 0;
 
-    // ─── 1. KNOWN DOMAINS SCAN ────────────────────────────────────────────────
-    for (const domEntry of domains) {
-      const domain = cleanDomain(domEntry.domain_name);
+    // ─── 1. GENERATE QUERIES ──────────────────────────────────────────────
+    const keywords = [
+      "onlyfans leak", "onlyfans leaks", "leaked", "nude", "nudes", "mega",
+      "telegram", "full pack", "free onlyfans", "ppv leak", "sex tape",
+      "video leak", "archive", "zip", "onlyfans 2024", "onlyfans 2025",
+    ];
+
+    const queries = [];
+    for (const name of allNames) {
+      for (const kw of keywords) {
+        queries.push(`"${name}" ${kw}`);
+      }
+    }
+
+    console.log(`[SCAN] Generated ${queries.length} queries to search`);
+
+    // ─── 2. SERP QUERIES ──────────────────────────────────────────────────
+    const serpResults = [];
+    for (const query of queries.slice(0, 40)) {
+      const [googleRes, bingRes] = await Promise.all([
+        querySerpAPI("google", query),
+        querySerpAPI("bing", query),
+      ]);
+      serpResults.push(...googleRes, ...bingRes);
+    }
+
+    console.log(`[SCAN] SERP returned ${serpResults.length} total results`);
+
+    // Deduplicate by URL
+    const uniqueResults = Array.from(new Map(serpResults.map(r => [r.url, r])).values());
+    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results`);
+
+    // ─── 3. CLASSIFY WITH AI ──────────────────────────────────────────────
+    const classified = await classifyResults(stageName, uniqueResults, base44);
+    console.log(`[SCAN] AI classified ${classified.length} results as potential leaks`);
+
+    // ─── 4. PROCESS CLASSIFIED RESULTS ────────────────────────────────────
+    const [existingLeaks, existingPending] = await Promise.all([
+      base44.asServiceRole.entities.Leak.filter({ creator_id: creatorId }),
+      base44.asServiceRole.entities.PendingApproval.filter({ creator_id: creatorId }),
+    ]);
+
+    const existingLeakUrls = new Set(existingLeaks.map(l => l.leak_url));
+    const existingPendingUrls = new Set(existingPending.map(p => p.leak_url));
+
+    for (const result of classified) {
+      if (!result.url || existingLeakUrls.has(result.url) || existingPendingUrls.has(result.url)) continue;
+
+      const domain = cleanDomain(result.url);
       if (!domain || whitelistSet.has(domain)) continue;
 
-      const nameQueries = allNames.flatMap((name, ni) => [
-        `${ni * 4 + 1}. site:${domain} "${name}"`,
-        `${ni * 4 + 2}. site:${domain} "${name}" leak`,
-        `${ni * 4 + 3}. site:${domain} "${name}" onlyfans`,
-        `${ni * 4 + 4}. site:${domain} "${name}" nude`,
-      ]).join("\n");
+      const fullResult = uniqueResults.find(r => r.url === result.url);
+      const domainEntry = knownDomainMap.get(domain);
 
-      console.log(`[KNOWN DOMAIN] Scanning: ${domain}`);
-
-      const aiRes = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a DMCA investigator. Search Google for leaked adult content of "${stageName}" (legal name: "${legalName}"${aliases.length ? `, also known as: ${aliases.join(", ")}` : ""}) on the site "${domain}".
-
-Run these searches:
-${nameQueries}
-
-Return JSON:
-- found: true only if you found real content pages
-- urls: array of real specific page URLs (not homepage, max 8)
-- content_types: matching array of types (video/gallery/forum/torrent/other)
-
-Do NOT invent URLs. Only report pages you actually verified exist.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            found: { type: "boolean" },
-            urls: { type: "array", items: { type: "string" } },
-            content_types: { type: "array", items: { type: "string" } },
-          },
-        },
-      });
-
-      console.log(`[KNOWN DOMAIN] ${domain}: found=${aiRes?.found}, urls=${aiRes?.urls?.length ?? 0}`);
-      if (!aiRes?.found || !aiRes?.urls?.length) continue;
-
-      const existingLeaks = await base44.asServiceRole.entities.Leak.filter({ creator_id: creator.id, domain });
-      const existingUrls = new Set(existingLeaks.map(l => l.leak_url));
-      const abuseEmail = domEntry.abuse_email || domEntry.dmca_contact;
-
-      for (let i = 0; i < aiRes.urls.length; i++) {
-        const url = aiRes.urls[i];
-        if (!url || existingUrls.has(url)) continue;
-
+      if (domainEntry) {
+        // ─── KNOWN DOMAIN → AUTO DMCA ─────────────────────────────
+        console.log(`[PROCESS] Known domain detected: ${domain}`);
         const noticeNumber = generateNoticeNumber();
+        
         const newLeak = await base44.asServiceRole.entities.Leak.create({
-          creator_id: creator.id,
+          creator_id: creatorId,
           creator_name: stageName,
-          leak_url: url,
+          leak_url: result.url,
           domain,
-          hosting_provider: domEntry.hosting_provider || "",
-          registrar: domEntry.registrar || "",
-          country: domEntry.country || "",
-          content_type: aiRes.content_types?.[i] || "other",
+          hosting_provider: domainEntry.hosting_provider || "",
+          registrar: domainEntry.registrar || "",
+          country: domainEntry.country || "",
+          content_type: "other",
           discovery_date: today,
           detected_by: "scraping",
           severity: "high",
           status: "found",
         });
         newLeaks++;
-        console.log(`[KNOWN DOMAIN] Created leak: ${url}`);
 
+        const abuseEmail = domainEntry.abuse_email || domainEntry.dmca_contact;
         if (abuseEmail) {
           const dmcaReq = await base44.asServiceRole.entities.DMCARequest.create({
             leak_id: newLeak.id,
-            creator_id: creator.id,
+            creator_id: creatorId,
             creator_name: stageName,
             notice_number: noticeNumber,
             sent_to_entity: domain,
@@ -190,113 +286,40 @@ Do NOT invent URLs. Only report pages you actually verified exist.`,
             escalation_level: 0,
             follow_up_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
           });
-          const sent = await sendDMCAEmail({ creatorName: stageName, creatorId: creator.id, leakUrl: url, domain, abuseEmail, noticeNumber, leakId: newLeak.id, dmcaRequestId: dmcaReq.id, base44 });
+
+          const sent = await sendDMCAEmail({
+            creatorName: stageName,
+            creatorId: creatorId,
+            leakUrl: result.url,
+            domain,
+            abuseEmail,
+            noticeNumber,
+            leakId: newLeak.id,
+            dmcaRequestId: dmcaReq.id,
+            base44,
+          });
           if (sent) dmcaSent++;
         }
-      }
-    }
-
-    // ─── 2. FREE WEB SCAN ─────────────────────────────────────────────────────
-    const keywords = [
-      "onlyfans leak", "onlyfans leaks", "leaked", "nude", "nudes", "mega",
-      "telegram", "full pack", "archive", "zip", "ppv leak", "free onlyfans",
-      "onlyfans mega link", "onlyfans telegram", "sex tape", "onlyfans 2025",
-      "onlyfans gratis", "nuda", "video leak",
-    ];
-
-    const topQueries = allNames.flatMap(name =>
-      keywords.slice(0, 10).map(kw => `"${name}" ${kw}`)
-    ).slice(0, 30).map((q, i) => `${i + 1}. ${q}`).join("\n");
-
-    console.log(`[FREE SCAN] Starting free scan for: ${allNames.join(", ")}`);
-
-    const freeRes = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a DMCA investigator. Find pirated/leaked adult content of this creator:
-
-Stage name: "${stageName}"
-Legal name: "${legalName}"
-${aliases.length ? `Aliases: ${aliases.join(", ")}` : ""}
-
-Run ALL of these searches on Google and Bing:
-${topQueries}
-
-Also search directly on high-risk sites:
-- site:simpcity.su "${stageName}"
-- site:coomer.su "${stageName}"
-- site:forums.socialmediagirls.com "${stageName}"
-- site:leakedbb.com "${stageName}"
-- site:thothub.tv "${stageName}"
-- site:fapello.com "${stageName}"
-- "${stageName}" telegram leak
-- "${legalName}" nude leaked
-
-RULES:
-- Report ALL pages found, even low confidence
-- Do NOT exclude anything except: onlyfans.com, fansly.com, patreon.com, instagram.com, twitter.com, x.com, tiktok.com, youtube.com
-- Include forum threads, video pages, mega links, telegram references, file hosts
-- Empty results array is OK if truly nothing found - do NOT fabricate results
-
-Return JSON with results array (each item: url, domain, content_type, confidence, context).`,
-      add_context_from_internet: true,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          results: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                url: { type: "string" },
-                domain: { type: "string" },
-                content_type: { type: "string" },
-                confidence: { type: "string" },
-                context: { type: "string" },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    const freeResults = freeRes?.results || [];
-    console.log(`[FREE SCAN] AI returned ${freeResults.length} results`);
-    if (freeResults.length > 0) {
-      console.log(`[FREE SCAN] Findings: ${JSON.stringify(freeResults.map(r => ({ url: r.url, domain: r.domain, confidence: r.confidence })))}`);
-    }
-
-    let pendingApprovals = 0;
-    if (freeResults.length > 0) {
-      const [existingPending, existingLeaksAll] = await Promise.all([
-        base44.asServiceRole.entities.PendingApproval.filter({ creator_id: creator.id }),
-        base44.asServiceRole.entities.Leak.filter({ creator_id: creator.id }),
-      ]);
-      const pendingUrlSet = new Set(existingPending.map(p => p.leak_url));
-      const leakUrlSet = new Set(existingLeaksAll.map(l => l.leak_url));
-
-      for (const result of freeResults) {
-        if (!result.url || !result.domain) continue;
-        const domain = cleanDomain(result.domain) || result.domain.toLowerCase();
-        if (whitelistSet.has(domain)) continue;
-        if (leakUrlSet.has(result.url) || pendingUrlSet.has(result.url)) continue;
-
+      } else {
+        // ─── UNKNOWN DOMAIN → PENDING APPROVAL ─────────────────────
+        console.log(`[PROCESS] Unknown domain, creating pending approval: ${domain}`);
         await base44.asServiceRole.entities.PendingApproval.create({
-          creator_id: creator.id,
+          creator_id: creatorId,
           creator_name: stageName,
           leak_url: result.url,
           domain,
-          content_type: result.content_type || "other",
+          content_type: "other",
           discovery_date: today,
-          search_context: result.context || "",
+          search_context: fullResult?.snippet || "",
           status: "pending",
         });
         pendingApprovals++;
-        console.log(`[FREE SCAN] Created pending approval: ${result.url} (${result.confidence})`);
       }
     }
 
-    console.log(`[SCAN] Done. newLeaks=${newLeaks}, dmcaSent=${dmcaSent}, pendingApprovals=${pendingApprovals}`);
+    console.log(`[SCAN] Complete. newLeaks=${newLeaks}, dmcaSent=${dmcaSent}, pendingApprovals=${pendingApprovals}`);
 
-    // ─── 3. UPDATE CREATOR STATS ──────────────────────────────────────────────
+    // ─── 5. UPDATE CREATOR STATS ──────────────────────────────────────────
     const allLeaks = await base44.asServiceRole.entities.Leak.filter({ creator_id: creatorId });
     const activeLeaks = allLeaks.filter(l => l.status !== "removed" && l.status !== "rejected");
     const removedLeaks = allLeaks.filter(l => l.status === "removed");
@@ -305,19 +328,17 @@ Return JSON with results array (each item: url, domain, content_type, confidence
 
     const VMC_TIER = { low: 12, medium: 25, high: 60, vip: 130 };
     const vmc = creator.content_value || VMC_TIER[creator.creator_tier] || 25;
-    const domainMap = {};
-    domains.forEach(d => { domainMap[cleanDomain(d.domain_name)] = d; });
 
     let estimatedLoss = 0;
     for (const leak of allLeaks) {
-      const d = domainMap[cleanDomain(leak.domain)];
+      const d = knownDomainMap.get(cleanDomain(leak.domain));
       const fdd = d?.diffusion_factor || 1.0;
       const daysOnline = leak.days_online || 1;
       estimatedLoss += vmc * fdd * (1 + (daysOnline / 30) * 0.15);
     }
     if (creator.ltv_mean_fan > 0) {
       const avgConv = allLeaks.length > 0
-        ? allLeaks.reduce((s, l) => s + (domainMap[cleanDomain(l.domain)]?.conversion_loss_factor || 0.04), 0) / allLeaks.length
+        ? allLeaks.reduce((s, l) => s + (knownDomainMap.get(cleanDomain(l.domain))?.conversion_loss_factor || 0.04), 0) / allLeaks.length
         : 0.04;
       estimatedLoss += creator.ltv_mean_fan * avgConv * activeLeaks.length;
     }
@@ -343,7 +364,7 @@ Return JSON with results array (each item: url, domain, content_type, confidence
       risk_level: riskLevel,
     });
 
-    return Response.json({ success: true, creatorId, newLeaks, dmcaSent, pendingApprovals });
+    return Response.json({ success: true, creatorId, newLeaks, dmcaSent, pendingApprovals, serpResultsFound: uniqueResults.length, classified: classified.length });
   } catch (error) {
     console.error("[SCAN] Fatal error:", error.message, error.stack);
     return Response.json({ error: error.message }, { status: 500 });
