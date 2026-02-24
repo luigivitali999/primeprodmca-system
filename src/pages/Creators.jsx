@@ -71,7 +71,9 @@ export default function Creators() {
     doc_back_url: '',
     doc_selfie_url: '',
     doc_verified: false,
+    aliases: [],
   });
+  const [aliasInput, setAliasInput] = useState('');
 
   const queryClient = useQueryClient();
 
