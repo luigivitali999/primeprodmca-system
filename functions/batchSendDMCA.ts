@@ -76,32 +76,49 @@ Deno.serve(async (req) => {
     const leak = leaks.find(l => l.id === dmcaRequest.leak_id);
     if (!leak) return Response.json({ error: "Leak not found" }, { status: 404 });
 
-    // Find domain intelligence for abuse email
+    // Find domain intelligence for abuse email (from structured source only)
     let abuseEmail = null;
     const domainIntel = domains.find(d => d.domain_name === leak.domain);
     
+    console.log(`[BATCH SEND] Looking for abuse email for domain: ${leak.domain}`);
+    
     if (domainIntel?.abuse_email) {
       abuseEmail = domainIntel.abuse_email;
-      console.log(`[BATCH SEND] Found abuse_email in DomainIntelligence: ${abuseEmail}`);
+      console.log(`[BATCH SEND] Found abuse_email in DomainIntelligence: "${abuseEmail}"`);
     } else if (domainIntel?.dmca_contact) {
       abuseEmail = domainIntel.dmca_contact;
-      console.log(`[BATCH SEND] Found dmca_contact in DomainIntelligence: ${abuseEmail}`);
-    } else {
-      console.log(`[BATCH SEND] No email in DomainIntelligence for domain ${leak.domain}`);
-      // Return error - don't attempt extraction from website
+      console.log(`[BATCH SEND] Found dmca_contact in DomainIntelligence: "${abuseEmail}"`);
     }
 
-    if (!abuseEmail) {
-      console.warn(`[BATCH SEND] No abuse email found for domain ${leak.domain}`);
-      return Response.json({ error: "No abuse email found for this domain" }, { status: 400 });
+    // Normalize email (remove all invisible whitespace)
+    if (abuseEmail) {
+      const originalEmail = abuseEmail;
+      abuseEmail = normalizeEmail(abuseEmail);
+      console.log(`[BATCH SEND] Email before normalization: "${originalEmail}"`);
+      console.log(`[BATCH SEND] Email after normalization: "${abuseEmail}"`);
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(abuseEmail)) {
-      console.error(`[BATCH SEND] INVALID EMAIL FORMAT: "${abuseEmail}" (length: ${abuseEmail.length})`);
-      return Response.json({ error: `Invalid email format: "${abuseEmail}"` }, { status: 400 });
+    if (!abuseEmail || !isValidEmail(abuseEmail)) {
+      console.error(`[BATCH SEND] INVALID/MISSING EMAIL for domain ${leak.domain}`);
+      console.error(`[BATCH SEND] Email value: "${abuseEmail}"`);
+      
+      // Set DMCA request to pending with note about missing contact
+      const today = new Date().toISOString().split("T")[0];
+      await base44.asServiceRole.entities.DMCARequest.update(dmcaRequestId, {
+        status: "pending",
+        notes: `No valid abuse email found in DomainIntelligence for ${leak.domain}. Email must be added via admin interface.`,
+      });
+      
+      return Response.json({ 
+        error: "Missing valid contact email", 
+        domain: leak.domain,
+        status: "pending",
+        message: "DMCA request set to pending - email contact required"
+      }, { status: 400 });
     }
+    
+    console.log(`[BATCH SEND] ✓ Email validation passed: ${abuseEmail}`);
 
     const emailBody = buildDMCAEmail({
       creatorName: dmcaRequest.creator_name,
