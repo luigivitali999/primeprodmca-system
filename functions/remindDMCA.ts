@@ -32,12 +32,12 @@ Deno.serve(async (req) => {
         new Date(b.sent_date || 0) - new Date(a.sent_date || 0)
       )[0];
 
-      // Only re-send if more than 5 days have passed
+      // Only re-send if more than 1 day has passed
       const daysSinceSent = lastDMCA.sent_date 
         ? Math.floor((Date.now() - new Date(lastDMCA.sent_date).getTime()) / (1000 * 60 * 60 * 24))
         : 999;
 
-      if (daysSinceSent < 5) {
+      if (daysSinceSent < 1) {
         skipped++;
         continue;
       }
