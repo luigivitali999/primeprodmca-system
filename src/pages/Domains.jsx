@@ -185,7 +185,7 @@ export default function Domains() {
     setIsDialogOpen(true);
   };
 
-  const filteredDomains = domains.filter(domain => {
+  const filteredDomains = domainsWithLiveStats.filter(domain => {
     const matchesSearch = 
       domain.domain_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       domain.hosting_provider?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -195,12 +195,12 @@ export default function Domains() {
     return matchesSearch && matchesRisk;
   });
 
-  // Stats
-  const highRiskDomains = domains.filter(d => d.high_risk_flag);
-  const avgRemovalRate = domains.length > 0 
-    ? Math.round(domains.reduce((acc, d) => acc + (d.removal_rate || 0), 0) / domains.length)
+  // Stats live
+  const highRiskDomains = domainsWithLiveStats.filter(d => d.high_risk_flag);
+  const avgRemovalRate = domainsWithLiveStats.length > 0 
+    ? Math.round(domainsWithLiveStats.reduce((acc, d) => acc + (d.removal_rate || 0), 0) / domainsWithLiveStats.length)
     : 0;
-  const totalLeaks = domains.reduce((acc, d) => acc + (d.total_leaks || 0), 0);
+  const totalLeaks = allLeaks.length;
 
   if (isLoading) {
     return (
