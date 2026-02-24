@@ -237,6 +237,20 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ─── UPDATE DOMAIN STATS (EVENT-DRIVEN) ────────────────────────
+    if (domain && leakId) {
+      try {
+        await base44.asServiceRole.functions.invoke("updateDomainStats", {
+          domain,
+          event_type: "dmca_sent",
+          leak_id: leakId,
+        });
+        console.log(`[sendDMCA] Domain stats updated for ${domain}`);
+      } catch (err) {
+        console.warn(`[sendDMCA] Domain stats update failed: ${err.message}`);
+      }
+    }
+
     return Response.json({ success: true, messageId: brevoData.messageId });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
