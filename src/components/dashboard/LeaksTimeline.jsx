@@ -132,20 +132,20 @@ export default function LeaksTimeline({ leaks }) {
                 }}
               />
               <Area
-                type="monotone"
+                type="basis"
                 dataKey="found"
                 stroke="#818cf8"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#gradFound)"
                 dot={false}
                 activeDot={<CustomDot stroke="#818cf8" />}
                 name="found"
               />
               <Area
-                type="monotone"
+                type="basis"
                 dataKey="removed"
                 stroke="#34d399"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#gradRemoved)"
                 dot={false}
                 activeDot={<CustomDot stroke="#34d399" />}
