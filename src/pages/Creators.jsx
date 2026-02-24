@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -81,6 +81,14 @@ export default function Creators() {
     queryKey: ['creators'],
     queryFn: () => base44.entities.Creator.list('-created_date', 200),
   });
+
+  // Real-time subscription to Creator changes
+  useEffect(() => {
+    const unsubscribe = base44.entities.Creator.subscribe((event) => {
+      queryClient.invalidateQueries({ queryKey: ['creators'] });
+    });
+    return unsubscribe;
+  }, [queryClient]);
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Creator.create(data),
