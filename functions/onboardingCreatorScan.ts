@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
     // ─── 2. EXECUTE SERP QUERIES + COLLECT ALL RESULTS ──────────────────────
     const allSerpResults = [];
     
-    for (const query of queries.slice(0, 15)) {
+    for (const query of queries.slice(0, 7)) {
       const [googleResults, bingResults] = await Promise.all([
         querySerpAPI("google", query),
         querySerpAPI("bing", query),
@@ -248,15 +248,15 @@ Deno.serve(async (req) => {
 
     console.log(`[SCAN] SERP total: ${allSerpResults.length} results (before dedup)`);
 
-    // Deduplicate by URL
+    // Deduplicate by URL and limit to 50
     const dedupMap = new Map();
     for (const result of allSerpResults) {
-      if (!dedupMap.has(result.url)) {
+      if (!dedupMap.has(result.url) && dedupMap.size < 50) {
         dedupMap.set(result.url, result);
       }
     }
     const uniqueResults = Array.from(dedupMap.values());
-    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results`);
+    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results (max 50)`);
 
     // ─── 3. SKIP AI CLASSIFICATION (TEMPORARY - DISABLED FOR STABILITY) ──────────────────────────────────
     // Use simple domain-based classification instead
