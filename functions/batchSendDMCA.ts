@@ -4,10 +4,25 @@ const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
 const FROM_EMAIL = "dmca@myonly.me";
 const FROM_NAME = "PRIME DMCA Intelligence";
 
+// Email validation regex - strict
+const EMAIL_REGEX = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 function generateNoticeNumber() {
   const ts = Date.now().toString(36).toUpperCase();
   const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `PRIME-${ts}-${rand}`;
+}
+
+function normalizeEmail(email) {
+  if (!email || typeof email !== 'string') return null;
+  // Remove all whitespace (including non-breaking spaces, tabs, newlines)
+  let normalized = email.replace(/[\s\u00a0\u200b\u200c\u200d\ufeff]/g, '').trim().toLowerCase();
+  return normalized || null;
+}
+
+function isValidEmail(email) {
+  if (!email) return false;
+  return EMAIL_REGEX.test(email);
 }
 
 function buildDMCAEmail({ creatorName, leakUrl, domain, noticeNumber, fromEmail }) {
