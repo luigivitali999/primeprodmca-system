@@ -306,8 +306,48 @@ Deno.serve(async (req) => {
     const totalLeaks = allLeaks.length;
     const removalRate = totalLeaks > 0 ? Math.round((removedLeaks.length / totalLeaks) * 100) : 0;
 
-    // Calcolo risk score semplice
-    const riskScore = Math.min(Math.round((activeLeaks.length / Math.max(totalLeaks, 1)) * 50 + Math.min(activeLeaks.length * 5, 50)), 100);
+    // Calcolo estimated_loss
+    const VMC_TIER = { low: 12, medium: 25, high: 60, vip: 130 };
+    const vmc = creator.content_value || VMC_TIER[creator.creator_tier] || 25;
+    const domainMap = {};
+    domains.forEach((d) => { domainMap[d.domain_name] = d; });
+
+    let estimatedLoss = 0;
+    for (const leak of allLeaks) {
+      const domainEntry = domainMap[leak.domain];
+      const fdd = domainEntry?.diffusion_factor || 1.0;
+      const daysOnline = leak.days_online || 1;
+      const iit = 1 + (daysOnline / 30) * 0.15;
+      estimatedLoss += vmc * fdd * iit;
+    }
+    // Aggiungi perdita opportunità
+    if (creator.ltv_mean_fan && creator.ltv_mean_fan > 0) {
+      const avgConvFactor = allLeaks.length > 0
+        ? allLeaks.reduce((sum, leak) => {
+            const d = domainMap[leak.domain];
+            return sum + (d?.conversion_loss_factor || 0.04);
+          }, 0) / allLeaks.length
+        : 0.04;
+      estimatedLoss += creator.ltv_mean_fan * avgConvFactor * activeLeaks.length;
+    }
+    estimatedLoss = Math.round(estimatedLoss * 100) / 100;
+
+    // Calcolo avg_removal_time per i leak rimossi
+    let avgRemovalTime = null;
+    const removedWithDates = removedLeaks.filter((l) => l.first_notice_date && l.removal_date);
+    if (removedWithDates.length > 0) {
+      const totalDays = removedWithDates.reduce((sum, l) => {
+        const diff = (new Date(l.removal_date) - new Date(l.first_notice_date)) / (1000 * 60 * 60 * 24);
+        return sum + diff;
+      }, 0);
+      avgRemovalTime = Math.round(totalDays / removedWithDates.length);
+    }
+
+    // Calcolo risk score
+    const lossScore = Math.min(estimatedLoss / 10000, 1) * 35;
+    const activeScore = Math.min(activeLeaks.length / 20, 1) * 15;
+    const removalScore = (1 - removalRate / 100) * 15;
+    const riskScore = Math.min(Math.round(lossScore + activeScore + removalScore + 15), 100);
     const riskLevel = riskScore >= 81 ? "critical" : riskScore >= 61 ? "high" : riskScore >= 31 ? "medium" : "low";
 
     await base44.asServiceRole.entities.Creator.update(creatorId, {
@@ -315,6 +355,8 @@ Deno.serve(async (req) => {
       active_leaks: activeLeaks.length,
       removed_leaks: removedLeaks.length,
       removal_rate: removalRate,
+      estimated_loss: estimatedLoss,
+      avg_removal_time: avgRemovalTime,
       risk_score: riskScore,
       risk_level: riskLevel,
     });
