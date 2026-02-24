@@ -1,8 +1,29 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-export default function TopDomainsTable({ domains }) {
-  const sortedDomains = [...domains]
+export default function TopDomainsTable({ domains, leaks = [] }) {
+  // Calcola statistiche domini direttamente dai leak (sempre aggiornati)
+  const domainStats = {};
+  leaks.forEach(leak => {
+    if (!leak.domain) return;
+    if (!domainStats[leak.domain]) {
+      domainStats[leak.domain] = { domain_name: leak.domain, total_leaks: 0, total_removed: 0 };
+    }
+    domainStats[leak.domain].total_leaks++;
+    if (leak.status === 'removed') domainStats[leak.domain].total_removed++;
+  });
+
+  // Merge con dati DomainIntelligence (high_risk_flag ecc.)
+  const merged = Object.values(domainStats).map(stat => {
+    const domainInfo = domains.find(d => d.domain_name === stat.domain_name) || {};
+    return {
+      ...domainInfo,
+      ...stat,
+      removal_rate: stat.total_leaks > 0 ? Math.round((stat.total_removed / stat.total_leaks) * 100) : 0,
+    };
+  });
+
+  const sortedDomains = merged
     .sort((a, b) => (b.total_leaks || 0) - (a.total_leaks || 0))
     .slice(0, 8);
 
