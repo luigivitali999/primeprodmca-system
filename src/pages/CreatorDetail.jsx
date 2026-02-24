@@ -131,12 +131,30 @@ export default function CreatorDetail() {
   return (
     <div className="space-y-6">
       {/* Back Button */}
-      <Link to={createPageUrl('Creators')}>
-        <Button variant="ghost" className="gap-2 -ml-2">
-          <ArrowLeft className="w-4 h-4" />
-          Torna ai Creators
-        </Button>
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link to={createPageUrl('Creators')}>
+          <Button variant="ghost" className="gap-2 -ml-2" style={{ color: '#94a3b8' }}>
+            <ArrowLeft className="w-4 h-4" />
+            Torna ai Creators
+          </Button>
+        </Link>
+        <div className="flex items-center gap-3">
+          {scanResult && (
+            <div className="flex items-center gap-3 text-sm px-4 py-2 rounded-lg" style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', color: '#a5b4fc' }}>
+              <span>✓ {scanResult.newLeaks || 0} nuovi leak · {scanResult.pendingApprovals || 0} approvazioni pendenti</span>
+            </div>
+          )}
+          <Button
+            onClick={handleScan}
+            disabled={scanning}
+            style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.35)', color: '#a5b4fc' }}
+            className="hover:opacity-80 gap-2"
+          >
+            {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            {scanning ? 'Scansione in corso...' : 'Avvia Scansione AI'}
+          </Button>
+        </div>
+      </div>
 
       {/* Creator Header */}
       <Card className="bg-white border-0 shadow-sm">
