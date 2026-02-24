@@ -30,6 +30,17 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Creator.list('-created_date', 100),
   });
 
+  // Real-time subscription to Creator changes (estimated_loss updates)
+  useEffect(() => {
+    const unsubscribe = base44.entities.Creator.subscribe((event) => {
+      if (event.type === 'update') {
+        // Invalidate query to refetch creators
+        window.__dashboardRefresh?.();
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   const { data: domainsFetch = [], isLoading: domainsLoading } = useQuery({
     queryKey: ['domains-dashboard'],
     queryFn: () => base44.entities.DomainIntelligence.list('-total_leaks', 100),
