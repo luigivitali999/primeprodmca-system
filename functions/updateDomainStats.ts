@@ -118,6 +118,65 @@ Deno.serve(async (req) => {
     await base44.asServiceRole.entities.DomainIntelligence.update(domainRecord.id, updates);
     console.log(`[DOMAIN STATS] Domain ${cleanedDomain} updated successfully`);
 
+    // ─── UPDATE CREATOR STATS (RECALCULATE ESTIMATED LOSS) ────────
+    if (leak_id) {
+      try {
+        const leak = await base44.asServiceRole.entities.Leak.get(leak_id);
+        if (leak?.creator_id) {
+          const creator = await base44.asServiceRole.entities.Creator.get(leak.creator_id);
+          const allLeaks = await base44.asServiceRole.entities.Leak.filter({ creator_id: leak.creator_id });
+          const domains = await base44.asServiceRole.entities.DomainIntelligence.list();
+          const knownDomainMap = new Map(domains.map(d => [cleanDomain(d.domain_name), d]));
+
+          const activeLeaks = allLeaks.filter(l => l.status !== "removed" && l.status !== "rejected");
+          const removedLeaks = allLeaks.filter(l => l.status === "removed");
+          const totalLeaks = allLeaks.length;
+          const removalRate = totalLeaks > 0 ? Math.round((removedLeaks.length / totalLeaks) * 100) : 0;
+
+          const VMC_TIER = { low: 12, medium: 25, high: 60, vip: 130 };
+          const vmc = creator.content_value || VMC_TIER[creator.creator_tier] || 25;
+
+          let estimatedLoss = 0;
+          for (const l of allLeaks) {
+            const d = knownDomainMap.get(cleanDomain(l.domain));
+            const fdd = d?.diffusion_factor || 1.0;
+            const daysOnline = l.days_online || 1;
+            estimatedLoss += vmc * fdd * (1 + (daysOnline / 30) * 0.15);
+          }
+          if (creator.ltv_mean_fan > 0) {
+            const avgConv = allLeaks.length > 0
+              ? allLeaks.reduce((s, l) => s + (knownDomainMap.get(cleanDomain(l.domain))?.conversion_loss_factor || 0.04), 0) / allLeaks.length
+              : 0.04;
+            estimatedLoss += creator.ltv_mean_fan * avgConv * activeLeaks.length;
+          }
+          estimatedLoss = Math.round(estimatedLoss * 100) / 100;
+
+          let avgRemovalTime = null;
+          const removedWithDates = removedLeaks.filter(l => l.first_notice_date && l.removal_date);
+          if (removedWithDates.length > 0) {
+            avgRemovalTime = Math.round(removedWithDates.reduce((s, l) => s + (new Date(l.removal_date) - new Date(l.first_notice_date)) / 86400000, 0) / removedWithDates.length);
+          }
+
+          const riskScore = Math.min(Math.round(Math.min(estimatedLoss / 10000, 1) * 35 + Math.min(activeLeaks.length / 20, 1) * 15 + (1 - removalRate / 100) * 15 + 15), 100);
+          const riskLevel = riskScore >= 81 ? "critical" : riskScore >= 61 ? "high" : riskScore >= 31 ? "medium" : "low";
+
+          await base44.asServiceRole.entities.Creator.update(leak.creator_id, {
+            total_leaks: totalLeaks,
+            active_leaks: activeLeaks.length,
+            removed_leaks: removedLeaks.length,
+            removal_rate: removalRate,
+            estimated_loss: estimatedLoss,
+            avg_removal_time: avgRemovalTime,
+            risk_score: riskScore,
+            risk_level: riskLevel,
+          });
+          console.log(`[DOMAIN STATS] Creator ${leak.creator_id} stats updated: estimated_loss=${estimatedLoss}`);
+        }
+      } catch (err) {
+        console.warn(`[DOMAIN STATS] Creator stats update failed: ${err.message}`);
+      }
+    }
+
     return Response.json({
       success: true,
       domain: cleanedDomain,
