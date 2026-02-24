@@ -63,7 +63,7 @@ export default function EconomicLossTimeline({ leaks, creators, domains }) {
     });
 
     leaks.forEach(leak => {
-      if (leak.discovery_date) {
+      if (leak.discovery_date && leak.status !== 'removed' && leak.status !== 'rejected') {
         const dayIndex = data.findIndex(d => d.date === leak.discovery_date);
         if (dayIndex !== -1) {
           const creator = creators.find(c => c.id === leak.creator_id);
@@ -76,7 +76,9 @@ export default function EconomicLossTimeline({ leaks, creators, domains }) {
             const iit = 1 + (daysOnline / 30) * 0.15;
             const dayLoss = vmc * fdd * iit;
             
-            data[dayIndex].loss += dayLoss;
+            for (let j = dayIndex; j < data.length; j++) {
+              data[j].loss += dayLoss;
+            }
           }
         }
       }

@@ -131,7 +131,16 @@ export default function Dashboard() {
         />
         <StatsCard
           title="Perdita Stimata"
-          value={`$${(creators.reduce((sum, c) => sum + (c.estimated_loss || 0), 0) / 1000).toFixed(1)}k`}
+          value={`$${(leaks.filter(l => l.status !== 'removed' && l.status !== 'rejected').reduce((sum, l) => {
+            const creator = creators.find(c => c.id === l.creator_id);
+            const domain = domains.find(d => d.domain_name === l.domain);
+            const VMC_TIER = { low: 12, medium: 25, high: 60, vip: 130 };
+            const vmc = creator?.content_value || VMC_TIER[creator?.creator_tier] || 25;
+            const fdd = domain?.diffusion_factor || 1.0;
+            const daysOnline = l.days_online || 1;
+            const iit = 1 + (daysOnline / 30) * 0.15;
+            return sum + (vmc * fdd * iit);
+          }, 0) / 1000).toFixed(1)}k`}
           subtitle="accumulata"
           icon={TrendingUp}
           color="red"
