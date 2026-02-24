@@ -164,18 +164,23 @@ Deno.serve(async (req) => {
       brevoData = brevoText;
     }
 
-    console.log(`[BATCH SEND] Brevo response status: ${brevoRes.status}`);
-    console.log(`[BATCH SEND] Brevo response body:`, brevoData);
+    console.log(`[BATCH SEND] ✓ Brevo response status: ${brevoRes.status}`);
+    console.log(`[BATCH SEND] Brevo response:`, JSON.stringify(brevoData, null, 2));
 
     if (!brevoRes.ok) {
-      console.error(`[BATCH SEND] Brevo error:`, brevoData);
+      console.error(`[BATCH SEND] ✗ Brevo error - Email NOT sent`);
+      console.error(`[BATCH SEND] Error details:`, brevoData);
+      
+      // Update DMCA request status to pending
+      await base44.asServiceRole.entities.DMCARequest.update(dmcaRequestId, {
+        status: "pending",
+        notes: `Brevo API error: ${JSON.stringify(brevoData)}`,
+      });
+      
       return Response.json({ error: `Failed to send email: ${JSON.stringify(brevoData)}` }, { status: 500 });
     }
     
-    // Log message ID if available
-    if (brevoData?.messageId) {
-      console.log(`[BATCH SEND] Brevo messageId: ${brevoData.messageId}`);
-    }
+    console.log(`[BATCH SEND] ✓ Email successfully queued by Brevo`);
 
     const today = new Date().toISOString().split("T")[0];
 
