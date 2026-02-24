@@ -12,7 +12,8 @@ import {
   Clock,
   Send,
   AlertTriangle,
-  FileText
+  FileText,
+  Loader
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,6 +74,7 @@ export default function DMCARequests() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRequest, setEditingRequest] = useState(null);
+  const [sendingRequestId, setSendingRequestId] = useState(null);
   const [formData, setFormData] = useState({
     leak_id: '',
     creator_id: '',
@@ -173,6 +175,24 @@ export default function DMCARequests() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dmca-requests'] });
       queryClient.invalidateQueries({ queryKey: ['leaks'] });
+    },
+  });
+
+  const sendDMCAMutation = useMutation({
+    mutationFn: async (request) => {
+      setSendingRequestId(request.id);
+      const response = await base44.functions.invoke('batchSendDMCA', {
+        dmca_request_id: request.id,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dmca-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['leaks'] });
+      setSendingRequestId(null);
+    },
+    onError: () => {
+      setSendingRequestId(null);
     },
   });
 
@@ -327,6 +347,23 @@ export default function DMCARequests() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
+                          {request.status === 'pending' && (
+                            <DropdownMenuItem 
+                              onClick={() => sendDMCAMutation.mutate(request)}
+                              disabled={sendingRequestId === request.id}
+                              className="flex items-center gap-2"
+                            >
+                              {sendingRequestId === request.id ? (
+                                <>
+                                  <Loader className="w-4 h-4 animate-spin" />Invio in corso...
+                                </>
+                              ) : (
+                                <>
+                                  <Send className="w-4 h-4" />Invia DMCA Ora
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem onClick={() => handleEdit(request)}>
                             <Edit className="w-4 h-4 mr-2" />Modifica
                           </DropdownMenuItem>
