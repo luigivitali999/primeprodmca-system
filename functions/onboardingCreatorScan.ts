@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
     // ─── 2. EXECUTE SERP QUERIES + COLLECT ALL RESULTS ──────────────────────
     const allSerpResults = [];
     
-    for (const query of queries) {
+    for (const query of queries.slice(0, 15)) {
       const [googleResults, bingResults] = await Promise.all([
         querySerpAPI("google", query),
         querySerpAPI("bing", query),
@@ -255,8 +255,8 @@ Deno.serve(async (req) => {
         dedupMap.set(result.url, result);
       }
     }
-    const uniqueResults = Array.from(dedupMap.values()).slice(0, 30);
-    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results (max 30)`);
+    const uniqueResults = Array.from(dedupMap.values());
+    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results`);
 
     // ─── 3. CLASSIFY ALL RESULTS WITH AI ──────────────────────────────────
     const classified = await classifyAllResults(
