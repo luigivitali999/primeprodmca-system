@@ -219,29 +219,30 @@ IMPORTANT: Only include URLs that are real pages you actually found. Do not inve
 async function scanFreely(creator, knownDomains, whitelistDomains, base44) {
   const stageName = creator.stage_name || creator.legal_name;
 
+  const legalName = creator.legal_name || stageName;
+  const searchQueries = buildSearchQueries(creator);
+  // Prendi le prime 20 query più efficaci per non appesantire il prompt
+  const topQueries = searchQueries.slice(0, 20).map((q, i) => `${i + 1}. ${q}`).join("\n");
+
   const aiResponse = await base44.integrations.Core.InvokeLLM({
-    prompt: `You are a DMCA investigator searching for pirated/leaked content. Search Google extensively for unauthorized content of the adult creator "${stageName}".
+    prompt: `You are a DMCA investigator. Search Google and Bing for pirated/leaked content of the adult creator "${stageName}" (legal name: "${legalName}").
 
-Try these searches:
-1. "${stageName}" leak site
-2. "${stageName}" onlyfans leaked
-3. "${stageName}" free download
-4. "${stageName}" nudes forum
-5. "${stageName}" mega.nz OR gofile
+Execute ALL of these searches and report every page you find:
+${topQueries}
 
-Exclude ONLY: onlyfans.com, fansly.com, patreon.com, instagram.com, twitter.com, x.com, tiktok.com, youtube.com, reddit.com, threads.net.
+Exclude ONLY these official platforms: onlyfans.com, fansly.com, patreon.com, instagram.com, twitter.com, x.com, tiktok.com, youtube.com, reddit.com, threads.net.
 
-For every real page you find with their pirated content, include it in results.
+Report every real page found with pirated content. Include forum threads, video sites, file hosting links (mega, gofile, drive), telegram channels, etc.
 
 Return JSON with:
 - results: array of objects, each with:
   - url: the exact URL of the page
   - domain: just the root domain (e.g. "simpcity.su")
-  - content_type: video/gallery/forum/torrent/mega/other
+  - content_type: video/gallery/forum/torrent/mega/telegram/other
   - confidence: high/medium/low
   - context: 1 sentence describing what was found
 
-Include ALL results with confidence medium or high. Max 15 results.`,
+Include ALL results with confidence medium or high. Max 20 results.`,
     add_context_from_internet: true,
     response_json_schema: {
       type: "object",
