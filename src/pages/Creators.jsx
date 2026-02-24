@@ -162,6 +162,7 @@ export default function Creators() {
       doc_back_url: creator.doc_back_url || '',
       doc_selfie_url: creator.doc_selfie_url || '',
       doc_verified: creator.doc_verified || false,
+      aliases: creator.aliases || [],
     });
     setIsDialogOpen(true);
   };
