@@ -128,8 +128,8 @@ Deno.serve(async (req) => {
       fromEmail: FROM_EMAIL,
     });
 
-    console.log(`[BATCH SEND] Sending to ${abuseEmail} for domain ${leak.domain}`);
-    console.log(`[BATCH SEND] BREVO_API_KEY present: ${BREVO_API_KEY ? 'YES (first 10: ' + BREVO_API_KEY.substring(0, 10) + '...)' : 'NO'}`);
+    console.log(`[BATCH SEND] ✓ Preparing email payload for: ${abuseEmail}`);
+    console.log(`[BATCH SEND] BREVO_API_KEY present: ${BREVO_API_KEY ? 'YES' : 'NO'}`);
 
     const payload = {
       sender: { name: FROM_NAME, email: FROM_EMAIL },
@@ -139,8 +139,13 @@ Deno.serve(async (req) => {
       textContent: emailBody,
     };
     
-    console.log(`[BATCH SEND] Payload about to send:`, JSON.stringify(payload, null, 2));
-    console.log(`[BATCH SEND] Making POST request to https://api.brevo.com/v3/smtp/email`);
+    // Final validation before sending
+    console.log(`[BATCH SEND] ━━━ PAYLOAD SUMMARY ━━━`);
+    console.log(`[BATCH SEND] From: ${payload.sender.email}`);
+    console.log(`[BATCH SEND] To: ${payload.to[0].email}`);
+    console.log(`[BATCH SEND] Subject: ${payload.subject}`);
+    console.log(`[BATCH SEND] Notice Number: ${dmcaRequest.notice_number}`);
+    console.log(`[BATCH SEND] ━━━ SENDING TO BREVO ━━━`);
 
     const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
