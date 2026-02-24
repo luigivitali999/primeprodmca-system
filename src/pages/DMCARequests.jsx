@@ -50,12 +50,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { T, cardStyle, STATUS_DARK } from '@/components/utils/theme';
+import { T, cardStyle } from '@/components/utils/theme';
 
 const STATUS_LABELS = {
   pending: 'In Attesa', sent: 'Inviata', acknowledged: 'Ricevuta',
   processing: 'In Elaborazione', completed: 'Completata',
   rejected: 'Rifiutata', escalated: 'Escalation',
+};
+
+const DMCA_STATUS_DARK = {
+  pending:     { bg: 'rgba(59,130,246,0.15)',  color: '#60a5fa', label: 'In Attesa' },
+  sent:        { bg: 'rgba(251,191,36,0.15)',  color: '#fbbf24', label: 'Inviata' },
+  acknowledged:{ bg: 'rgba(168,85,247,0.15)', color: '#c084fc', label: 'Ricevuta' },
+  processing:  { bg: 'rgba(99,102,241,0.15)', color: '#a5b4fc', label: 'In Elaborazione' },
+  completed:   { bg: 'rgba(16,185,129,0.15)', color: '#34d399', label: 'Completata' },
+  rejected:    { bg: 'rgba(100,116,139,0.15)',color: '#94a3b8', label: 'Rifiutata' },
+  escalated:   { bg: 'rgba(236,72,153,0.15)', color: '#f472b6', label: 'Escalation' },
 };
 
 export default function DMCARequests() {
