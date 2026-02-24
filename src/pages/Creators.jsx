@@ -126,11 +126,20 @@ export default function Creators() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Extract OF username to build avatar URL
+    let profileImage = formData.profile_image || '';
+    if (formData.onlyfans_url && !profileImage) {
+      const match = formData.onlyfans_url.match(/onlyfans\.com\/([^/?#]+)/);
+      if (match) {
+        profileImage = `https://img.onlyfans.com/media/post/header_mobile/${match[1]}`;
+      }
+    }
     const data = {
       ...formData,
       monthly_revenue: formData.monthly_revenue ? parseFloat(formData.monthly_revenue) : 0,
       content_value: formData.content_value ? parseFloat(formData.content_value) : null,
       ltv_mean_fan: formData.ltv_mean_fan ? parseFloat(formData.ltv_mean_fan) : null,
+      ...(profileImage && { profile_image: profileImage }),
     };
 
     if (editingCreator) {
