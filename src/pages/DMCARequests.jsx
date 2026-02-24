@@ -52,6 +52,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { T, cardStyle } from '@/components/utils/theme';
+import SendDMCAProgressDialog from '@/components/dmca/SendDMCAProgressDialog';
 
 const STATUS_LABELS = {
   pending: 'In Attesa', sent: 'Inviata', acknowledged: 'Ricevuta',
@@ -75,6 +76,10 @@ export default function DMCARequests() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRequest, setEditingRequest] = useState(null);
   const [sendingRequestId, setSendingRequestId] = useState(null);
+  const [progressOpen, setProgressOpen] = useState(false);
+  const [progressStep, setProgressStep] = useState(0);
+  const [progressError, setProgressError] = useState(null);
+  const [progressData, setProgressData] = useState({ creatorName: '', domain: '' });
   const [formData, setFormData] = useState({
     leak_id: '',
     creator_id: '',
@@ -181,15 +186,42 @@ export default function DMCARequests() {
   const sendDMCAMutation = useMutation({
     mutationFn: async (request) => {
       setSendingRequestId(request.id);
-      const response = await base44.functions.invoke('batchSendDMCA', {
-        dmca_request_id: request.id,
-      });
-      return response.data;
+      setProgressOpen(true);
+      setProgressStep(0);
+      setProgressError(null);
+      setProgressData({ creatorName: request.creator_name, domain: leaks.find(l => l.id === request.leak_id)?.domain || '' });
+
+      try {
+        setProgressStep(1); // Recupera i dati
+        await new Promise(r => setTimeout(r, 300));
+        
+        setProgressStep(2); // Costruisce l'email
+        await new Promise(r => setTimeout(r, 300));
+        
+        setProgressStep(3); // Invia via Brevo
+        const response = await base44.functions.invoke('batchSendDMCA', {
+          dmca_request_id: request.id,
+        });
+        
+        setProgressStep(4); // Aggiorna lo stato
+        await new Promise(r => setTimeout(r, 500));
+        
+        setProgressStep(5); // Completo
+        await new Promise(r => setTimeout(r, 1000));
+        
+        return response.data;
+      } catch (err) {
+        setProgressError(err.message);
+        throw err;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dmca-requests'] });
       queryClient.invalidateQueries({ queryKey: ['leaks'] });
-      setSendingRequestId(null);
+      setTimeout(() => {
+        setProgressOpen(false);
+        setSendingRequestId(null);
+      }, 2000);
     },
     onError: () => {
       setSendingRequestId(null);
@@ -484,6 +516,15 @@ export default function DMCARequests() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Progress Dialog */}
+      <SendDMCAProgressDialog 
+        isOpen={progressOpen}
+        currentStep={progressStep}
+        error={progressError}
+        creatorName={progressData.creatorName}
+        domain={progressData.domain}
+      />
     </div>
   );
 }
