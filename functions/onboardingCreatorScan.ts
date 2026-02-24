@@ -136,17 +136,20 @@ async function scanKnownDomains(creator, domains, whitelistDomains, base44) {
     if (whitelistDomains.has(domain)) continue;
 
     const legalName = creator.legal_name || stageName;
-    const aiResponse = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a DMCA investigator. Search Google for leaked/pirated adult content of the creator "${stageName}" (legal name: "${legalName}") specifically on the site "${domain}".
+    const aliases = creator.aliases || [];
+    const allNames = [stageName, legalName, ...aliases].filter(Boolean);
+    const nameQueries = allNames.flatMap(name => [
+      `site:${domain} "${name}"`,
+      `site:${domain} "${name}" leak`,
+      `site:${domain} "${name}" onlyfans`,
+      `site:${domain} "${name}" nude`,
+    ]).map((q, i) => `${i + 1}. ${q}`).join("\n");
 
-Use ALL of these Google search queries:
-1. site:${domain} "${stageName}"
-2. site:${domain} "${stageName}" leak
-3. site:${domain} "${stageName}" onlyfans
-4. site:${domain} "${stageName}" nude
-5. site:${domain} "${stageName}" mega
-6. site:${domain} "${legalName}" leak
-7. site:${domain} "${legalName}" onlyfans
+    const aiResponse = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are a DMCA investigator. Search Google for leaked/pirated adult content of the creator "${stageName}" (legal name: "${legalName}"${aliases.length ? `, aliases: ${aliases.join(", ")}` : ""}) specifically on the site "${domain}".
+
+Execute ALL of these searches:
+${nameQueries}
 
 For each query, check if real pages exist with their content (videos, galleries, photos, forum threads).
 
