@@ -183,7 +183,7 @@ Only return found:true if you are confident the content belongs to this creator.
 async function scanFreely(creator, knownDomains, whitelistDomains, base44) {
   const stageName = creator.stage_name || creator.legal_name;
 
-  const aiResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const aiResponse = await base44.integrations.Core.InvokeLLM({
     prompt: `Search the web broadly for leaked or unauthorized content featuring the adult content creator named "${stageName}".
 Search across all websites (not limited to specific domains).
 Exclude official platforms like OnlyFans, Fansly, Patreon, Instagram, Twitter/X, TikTok, YouTube, Reddit.
