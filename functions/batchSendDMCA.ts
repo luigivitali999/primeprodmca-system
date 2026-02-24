@@ -103,6 +103,18 @@ Deno.serve(async (req) => {
     });
 
     console.log(`[BATCH SEND] Sending to ${abuseEmail} for domain ${leak.domain}`);
+    console.log(`[BATCH SEND] BREVO_API_KEY present: ${BREVO_API_KEY ? 'YES (first 10: ' + BREVO_API_KEY.substring(0, 10) + '...)' : 'NO'}`);
+
+    const payload = {
+      sender: { name: FROM_NAME, email: FROM_EMAIL },
+      to: [{ email: abuseEmail, name: `Abuse @ ${leak.domain}` }],
+      replyTo: { email: FROM_EMAIL },
+      subject: `DMCA Takedown Notice – ${dmcaRequest.notice_number} – ${leak.domain}`,
+      textContent: emailBody,
+    };
+    
+    console.log(`[BATCH SEND] Payload about to send:`, JSON.stringify(payload, null, 2));
+    console.log(`[BATCH SEND] Making POST request to https://api.brevo.com/v3/smtp/email`);
 
     const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
@@ -110,17 +122,12 @@ Deno.serve(async (req) => {
         "api-key": BREVO_API_KEY,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        sender: { name: FROM_NAME, email: FROM_EMAIL },
-        to: [{ email: abuseEmail, name: `Abuse @ ${leak.domain}` }],
-        replyTo: { email: FROM_EMAIL },
-        subject: `DMCA Takedown Notice – ${dmcaRequest.notice_number} – ${leak.domain}`,
-        textContent: emailBody,
-      }),
+      body: JSON.stringify(payload),
     });
 
     const brevoText = await brevoRes.text();
     console.log(`[BATCH SEND] Brevo response status: ${brevoRes.status}`);
+    console.log(`[BATCH SEND] Brevo response headers:`, Object.fromEntries(brevoRes.headers.entries()));
     console.log(`[BATCH SEND] Brevo response body: ${brevoText}`);
 
     if (!brevoRes.ok) {
