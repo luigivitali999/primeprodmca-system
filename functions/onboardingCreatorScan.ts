@@ -253,8 +253,8 @@ Deno.serve(async (req) => {
         dedupMap.set(result.url, result);
       }
     }
-    const uniqueResults = Array.from(dedupMap.values());
-    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results`);
+    const uniqueResults = Array.from(dedupMap.values()).slice(0, 30);
+    console.log(`[SCAN] Deduplicated to ${uniqueResults.length} unique results (max 30)`);
 
     // ─── 3. CLASSIFY ALL RESULTS WITH AI ──────────────────────────────────
     const classified = await classifyAllResults(
