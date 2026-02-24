@@ -376,17 +376,27 @@ export default function Creators() {
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* OnlyFans URL */}
+            {/* Avatar upload */}
             <div className="space-y-2">
-              <Label style={{ color: T.textMuted, fontSize: 12 }}>Profilo OnlyFans (URL)</Label>
-              <Input
-                type="url"
-                value={formData.onlyfans_url}
-                onChange={(e) => setFormData({ ...formData, onlyfans_url: e.target.value })}
-                placeholder="https://onlyfans.com/username"
-                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
-              />
-              <p style={{ color: T.textMuted, fontSize: 11 }}>Opzionale — l'avatar verrà recuperato automaticamente dal profilo pubblico</p>
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Immagine Profilo</Label>
+              <div className="flex items-center gap-4">
+                <div style={{ width: 56, height: 56, borderRadius: 10, overflow: 'hidden', background: 'linear-gradient(135deg,#4f46e5,#3b82f6)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {formData.profile_image ? (
+                    <img src={formData.profile_image} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: 20 }}>
+                      {formData.stage_name?.charAt(0).toUpperCase() || '?'}
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <DocUploadField
+                    label="Carica immagine"
+                    value={formData.profile_image}
+                    onChange={(url) => setFormData({ ...formData, profile_image: url })}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Base info */}
