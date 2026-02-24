@@ -360,6 +360,19 @@ export default function Creators() {
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* OnlyFans URL */}
+            <div className="space-y-2">
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Profilo OnlyFans (URL)</Label>
+              <Input
+                type="url"
+                value={formData.onlyfans_url}
+                onChange={(e) => setFormData({ ...formData, onlyfans_url: e.target.value })}
+                placeholder="https://onlyfans.com/username"
+                style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
+              />
+              <p style={{ color: T.textMuted, fontSize: 11 }}>Opzionale — l'avatar verrà recuperato automaticamente dal profilo pubblico</p>
+            </div>
+
             {/* Base info */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
