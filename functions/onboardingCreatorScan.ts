@@ -88,6 +88,29 @@ async function sendDMCAEmail({ creatorName, creatorId, leakUrl, domain, abuseEma
   return true;
 }
 
+function buildSearchQueries(creator) {
+  const names = [creator.stage_name, creator.legal_name].filter(Boolean);
+  const uniqueNames = [...new Set(names)];
+
+  const keywordsBase = [
+    "onlyfans leak", "onlyfans leaks", "leaked", "nude", "nudes",
+    "mega", "telegram", "full pack", "archive", "zip", "ppv leak",
+    "free onlyfans", "onlyfans free download", "onlyfans mega link",
+    "onlyfans telegram", "onlyfans drive", "onlyfans dropbox",
+    "onlyfans full pack", "onlyfans archive", "sex tape", "sexvideo",
+    "nuda", "video leak", "onlyfans gratis", "gratuito",
+    "onlyfans 2024", "onlyfans 2025"
+  ];
+
+  const queries = [];
+  for (const name of uniqueNames) {
+    for (const kw of keywordsBase) {
+      queries.push(`"${name}" ${kw}`);
+    }
+  }
+  return queries;
+}
+
 async function scanKnownDomains(creator, domains, whitelistDomains, base44) {
   const stageName = creator.stage_name || creator.legal_name;
   let newLeaks = 0;
