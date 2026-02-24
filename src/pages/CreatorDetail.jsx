@@ -88,7 +88,20 @@ export default function CreatorDetail() {
     enabled: !!creatorId,
   });
 
+  const queryClient = useQueryClient();
+
   const isLoading = creatorLoading || leaksLoading;
+
+  const handleScan = async () => {
+    setScanning(true);
+    setScanResult(null);
+    const res = await base44.functions.invoke('onboardingCreatorScan', { creator_id: creatorId });
+    setScanning(false);
+    setScanResult(res.data);
+    queryClient.invalidateQueries({ queryKey: ['creator-leaks', creatorId] });
+    queryClient.invalidateQueries({ queryKey: ['creator', creatorId] });
+    queryClient.invalidateQueries({ queryKey: ['pending_approvals'] });
+  };
 
   if (isLoading) {
     return (
