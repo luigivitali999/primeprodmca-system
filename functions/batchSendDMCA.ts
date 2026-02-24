@@ -61,8 +61,32 @@ Deno.serve(async (req) => {
     if (!leak) return Response.json({ error: "Leak not found" }, { status: 404 });
 
     // Find domain intelligence for abuse email
+    let abuseEmail = null;
     const domainIntel = domains.find(d => d.domain_name === leak.domain);
-    const abuseEmail = domainIntel?.abuse_email || domainIntel?.dmca_contact;
+    
+    if (domainIntel?.abuse_email) {
+      abuseEmail = domainIntel.abuse_email;
+    } else if (domainIntel?.dmca_contact) {
+      abuseEmail = domainIntel.dmca_contact;
+    } else {
+      // Try to extract email from website
+      console.log(`[BATCH SEND] Email not in database, attempting to extract from ${leak.domain}`);
+      try {
+        const extractRes = await base44.asServiceRole.functions.invoke('extractAbuseEmail', {
+          domain: leak.domain,
+        });
+        abuseEmail = extractRes.data?.abuseEmail;
+        if (abuseEmail) {
+          console.log(`[BATCH SEND] Successfully extracted email: ${abuseEmail}`);
+          // Update domain intelligence for future use
+          if (domainIntel) {
+            await base44.asServiceRole.entities.DomainIntelligence.update(domainIntel.id, { abuse_email: abuseEmail });
+          }
+        }
+      } catch (err) {
+        console.warn(`[BATCH SEND] Failed to extract email: ${err.message}`);
+      }
+    }
 
     if (!abuseEmail) {
       console.warn(`[BATCH SEND] No abuse email found for domain ${leak.domain}`);
