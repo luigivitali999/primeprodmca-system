@@ -73,25 +73,32 @@ Deno.serve(async (req) => {
           // Step 4: Use AI to extract email from DMCA/Legal page
           console.log(`[ABUSE EMAIL] Extracting email from DMCA page`);
           
-          const emailExtraction = await base44.integrations.Core.InvokeLLM({
-            prompt: `Find the abuse/DMCA contact email in this HTML content. Look for abuse@, dmca@, legal@, or any contact email for copyright/abuse reports.
-            
-HTML content:
-${pageHtml.substring(0, 10000)}
+          // Try to extract email with regex first
+          const emailMatch = pageHtml.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+          if (emailMatch) {
+            abuseEmail = emailMatch[1];
+            console.log(`[ABUSE EMAIL] Found email via regex: ${abuseEmail}`);
+          } else {
+            // Fall back to LLM
+            const emailExtraction = await base44.integrations.Core.InvokeLLM({
+              prompt: `Find the abuse/DMCA contact email in this HTML. Look for any email address related to abuse, DMCA, copyright, or legal matters.
+              
+HTML:
+${pageHtml.substring(0, 15000)}
 
-Return as JSON: { email: "the email address or null", alternative_contact: "phone/form URL or null" }`,
-            response_json_schema: {
-              type: "object",
-              properties: {
-                email: { type: ["string", "null"] },
-                alternative_contact: { type: ["string", "null"] },
+Return just the email address or null.`,
+              response_json_schema: {
+                type: "object",
+                properties: {
+                  email: { type: ["string", "null"] },
+                },
               },
-            },
-          });
+            });
 
-          if (emailExtraction.email) {
-            abuseEmail = emailExtraction.email;
-            console.log(`[ABUSE EMAIL] Found email on DMCA page: ${abuseEmail}`);
+            if (emailExtraction.email && emailExtraction.email !== "null") {
+              abuseEmail = emailExtraction.email;
+              console.log(`[ABUSE EMAIL] Found email via LLM: ${abuseEmail}`);
+            }
           }
         }
       } catch (e) {
