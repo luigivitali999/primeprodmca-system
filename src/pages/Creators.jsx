@@ -146,7 +146,7 @@ export default function Creators() {
       legal_name: creator.legal_name || '',
       stage_name: creator.stage_name || '',
       email: creator.email || '',
-      onlyfans_url: creator.onlyfans_url || '',
+      profile_image: creator.profile_image || '',
       monthly_revenue: creator.monthly_revenue?.toString() || '',
       creator_tier: creator.creator_tier || 'medium',
       content_value: creator.content_value?.toString() || '',
