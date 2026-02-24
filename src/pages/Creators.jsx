@@ -126,24 +126,11 @@ export default function Creators() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Extract OF username to build avatar initials-based placeholder
-    // OnlyFans avatars require auth — use ui-avatars as fallback with stage name
-    const existingProfileImage = editingCreator?.profile_image || '';
-    let profileImage = existingProfileImage;
-    if (formData.onlyfans_url) {
-      const match = formData.onlyfans_url.match(/onlyfans\.com\/([^/?#]+)/);
-      if (match) {
-        const username = match[1];
-        // Use a public avatar service with the OF username
-        profileImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.stage_name || username)}&background=6366f1&color=fff&size=128&bold=true`;
-      }
-    }
     const data = {
       ...formData,
       monthly_revenue: formData.monthly_revenue ? parseFloat(formData.monthly_revenue) : 0,
       content_value: formData.content_value ? parseFloat(formData.content_value) : null,
       ltv_mean_fan: formData.ltv_mean_fan ? parseFloat(formData.ltv_mean_fan) : null,
-      ...(profileImage && { profile_image: profileImage }),
     };
 
     if (editingCreator) {
