@@ -20,6 +20,8 @@ import EconomicLossTimeline from '@/components/dashboard/EconomicLossTimeline';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Dashboard() {
+  const queryClient = useQueryClient();
+
   const { data: leaks = [], isLoading: leaksLoading } = useQuery({
     queryKey: ['leaks'],
     queryFn: () => base44.entities.Leak.list('-created_date', 1000),
@@ -29,17 +31,6 @@ export default function Dashboard() {
     queryKey: ['creators'],
     queryFn: () => base44.entities.Creator.list('-created_date', 100),
   });
-
-  // Real-time subscription to Creator changes (estimated_loss updates)
-  useEffect(() => {
-    const unsubscribe = base44.entities.Creator.subscribe((event) => {
-      if (event.type === 'update') {
-        // Invalidate query to refetch creators
-        window.__dashboardRefresh?.();
-      }
-    });
-    return unsubscribe;
-  }, []);
 
   const { data: domainsFetch = [], isLoading: domainsLoading } = useQuery({
     queryKey: ['domains-dashboard'],
@@ -56,23 +47,15 @@ export default function Dashboard() {
     queryFn: () => base44.entities.SocialReport.list('-created_date', 500),
   });
 
-  const queryClient = React.useRef(null);
-  if (!queryClient.current) {
-    queryClient.current = useQuery({
-      queryKey: ['creators'],
-      queryFn: () => base44.entities.Creator.list('-created_date', 100),
-    });
-  }
-
-  // Expose refetch function globally for subscription
+  // Real-time subscription to Creator changes (estimated_loss updates)
   useEffect(() => {
-    window.__dashboardRefresh = () => {
-      queryClient.current?.refetch?.();
-    };
-    return () => {
-      delete window.__dashboardRefresh;
-    };
-  }, []);
+    const unsubscribe = base44.entities.Creator.subscribe((event) => {
+      if (event.type === 'update') {
+        queryClient.invalidateQueries({ queryKey: ['creators'] });
+      }
+    });
+    return unsubscribe;
+  }, [queryClient]);
 
   const isLoading = leaksLoading || creatorsLoading || domainsLoading || dmcaLoading || socialLoading;
   const domains = domainsFetch;
