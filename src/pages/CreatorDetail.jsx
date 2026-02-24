@@ -78,11 +78,17 @@ export default function CreatorDetail() {
   const handleScan = async () => {
     setScanning(true);
     setScanResult(null);
-    const res = await base44.functions.invoke('onboardingCreatorScan', { creator_id: creatorId });
-    setScanning(false);
-    setScanResult(res.data);
-    queryClient.invalidateQueries({ queryKey: ['creator-leaks', creatorId] });
-    queryClient.invalidateQueries({ queryKey: ['creator', creatorId] });
+    try {
+      const res = await base44.functions.invoke('onboardingCreatorScan', { creator_id: creatorId });
+      setScanResult(res.data);
+      queryClient.invalidateQueries({ queryKey: ['creator-leaks', creatorId] });
+      queryClient.invalidateQueries({ queryKey: ['creator', creatorId] });
+    } catch (error) {
+      console.error('Scan error:', error);
+      setScanResult({ error: error.message || 'Scansione fallita. Riprova più tardi.' });
+    } finally {
+      setScanning(false);
+    }
   };
 
   if (isLoading) {
