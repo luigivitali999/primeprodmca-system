@@ -41,37 +41,20 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Step 2: Use AI to find DMCA/Abuse page location
-    console.log(`[ABUSE EMAIL] Searching for DMCA/Abuse page location`);
+    // Step 2: Search for DMCA link in homepage HTML
+    console.log(`[ABUSE EMAIL] Searching for DMCA link in homepage`);
     
-    const homepageSnippet = homeHtml.substring(0, 5000);
+    const dmcaLinkMatch = homeHtml.match(/href=["']([^"']*dmca[^"']*)['"]/i);
+    let pageToScrape = null;
     
-    const aiResponse = await base44.integrations.Core.InvokeLLM({
-      prompt: `Look at this HTML from a website's homepage. Find any links or references to DMCA, abuse contact, copyright, legal, or terms of service pages.
-      
-HTML snippet:
-${homepageSnippet}
-
-Extract:
-1. The exact URL path for abuse/DMCA page (if found)
-2. The URL path for legal/terms page (if found)
-3. Any email mentioned on the homepage
-
-Return as JSON: { dmca_url: "path or null", legal_url: "path or null", email: "email or null" }`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          dmca_url: { type: ["string", "null"] },
-          legal_url: { type: ["string", "null"] },
-          email: { type: ["string", "null"] },
-        },
-      },
-    });
-
-    console.log(`[ABUSE EMAIL] AI response:`, aiResponse);
-
-    let abuseEmail = aiResponse.email;
-    let pageToScrape = aiResponse.dmca_url || aiResponse.legal_url;
+    if (dmcaLinkMatch) {
+      pageToScrape = dmcaLinkMatch[1];
+      console.log(`[ABUSE EMAIL] Found DMCA link: ${pageToScrape}`);
+    } else {
+      console.log(`[ABUSE EMAIL] No DMCA link found in homepage`);
+    }
+    
+    let abuseEmail = null;
 
     // Step 3: If page found, fetch it
     if (pageToScrape) {
