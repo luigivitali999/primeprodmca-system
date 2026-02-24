@@ -120,13 +120,24 @@ Deno.serve(async (req) => {
     });
 
     const brevoText = await brevoRes.text();
+    let brevoData = null;
+    try {
+      brevoData = JSON.parse(brevoText);
+    } catch (e) {
+      brevoData = brevoText;
+    }
+
     console.log(`[BATCH SEND] Brevo response status: ${brevoRes.status}`);
-    console.log(`[BATCH SEND] Brevo response headers:`, Object.fromEntries(brevoRes.headers.entries()));
-    console.log(`[BATCH SEND] Brevo response body: ${brevoText}`);
+    console.log(`[BATCH SEND] Brevo response body:`, brevoData);
 
     if (!brevoRes.ok) {
-      console.error(`[BATCH SEND] Brevo error: ${brevoText}`);
-      return Response.json({ error: `Failed to send email: ${brevoText}` }, { status: 500 });
+      console.error(`[BATCH SEND] Brevo error:`, brevoData);
+      return Response.json({ error: `Failed to send email: ${JSON.stringify(brevoData)}` }, { status: 500 });
+    }
+    
+    // Log message ID if available
+    if (brevoData?.messageId) {
+      console.log(`[BATCH SEND] Brevo messageId: ${brevoData.messageId}`);
     }
 
     const today = new Date().toISOString().split("T")[0];
