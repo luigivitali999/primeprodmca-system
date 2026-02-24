@@ -100,7 +100,7 @@ ${pageHtml}`,
             });
 
             if (emailExtraction.email) {
-              abuseEmail = emailExtraction.email;
+              abuseEmail = emailExtraction.email.replace(/[\u00a0\s]/g, '').trim();
               console.log(`[ABUSE EMAIL] Found email via LLM: ${abuseEmail}`);
             }
           }
