@@ -192,20 +192,28 @@ async function scanFreely(creator, knownDomains, whitelistDomains, base44) {
   const stageName = creator.stage_name || creator.legal_name;
 
   const aiResponse = await base44.integrations.Core.InvokeLLM({
-    prompt: `Search the web broadly for leaked or unauthorized content featuring the adult content creator named "${stageName}".
-Search across all websites (not limited to specific domains).
-Exclude official platforms like OnlyFans, Fansly, Patreon, Instagram, Twitter/X, TikTok, YouTube, Reddit.
-Look for piracy/leak sites sharing their content without authorization.
+    prompt: `You are a DMCA investigator searching for pirated/leaked content. Search Google extensively for unauthorized content of the adult creator "${stageName}".
+
+Try these searches:
+1. "${stageName}" leak site
+2. "${stageName}" onlyfans leaked
+3. "${stageName}" free download
+4. "${stageName}" nudes forum
+5. "${stageName}" mega.nz OR gofile
+
+Exclude ONLY: onlyfans.com, fansly.com, patreon.com, instagram.com, twitter.com, x.com, tiktok.com, youtube.com, reddit.com, threads.net.
+
+For every real page you find with their pirated content, include it in results.
 
 Return JSON with:
 - results: array of objects, each with:
-  - url: the specific page URL
-  - domain: just the domain name (e.g. "example.com")
-  - content_type: video/gallery/forum/other
+  - url: the exact URL of the page
+  - domain: just the root domain (e.g. "simpcity.su")
+  - content_type: video/gallery/forum/torrent/mega/other
   - confidence: high/medium/low
-  - context: brief description of what was found
+  - context: 1 sentence describing what was found
 
-Only include results with confidence medium or high. Maximum 10 results total.`,
+Include ALL results with confidence medium or high. Max 15 results.`,
     add_context_from_internet: true,
     response_json_schema: {
       type: "object",
