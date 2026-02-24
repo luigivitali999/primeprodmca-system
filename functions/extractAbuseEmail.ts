@@ -81,6 +81,8 @@ Deno.serve(async (req) => {
           
           if (emailMatch) {
             abuseEmail = Array.isArray(emailMatch) ? (emailMatch[1] || emailMatch[0]) : emailMatch[0];
+            // Normalize email: remove non-breaking spaces and trim
+            abuseEmail = abuseEmail.replace(/[\u00a0\s]/g, '').trim();
             console.log(`[ABUSE EMAIL] Found email via regex: ${abuseEmail}`);
           } else {
             // Fall back to LLM with full HTML
