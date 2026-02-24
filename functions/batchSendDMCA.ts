@@ -67,26 +67,13 @@ Deno.serve(async (req) => {
     
     if (domainIntel?.abuse_email) {
       abuseEmail = domainIntel.abuse_email;
+      console.log(`[BATCH SEND] Found abuse_email in DomainIntelligence: ${abuseEmail}`);
     } else if (domainIntel?.dmca_contact) {
       abuseEmail = domainIntel.dmca_contact;
+      console.log(`[BATCH SEND] Found dmca_contact in DomainIntelligence: ${abuseEmail}`);
     } else {
-      // Try to extract email from website
-      console.log(`[BATCH SEND] Email not in database, attempting to extract from ${leak.domain}`);
-      try {
-        const extractRes = await base44.asServiceRole.functions.invoke('extractAbuseEmail', {
-          domain: leak.domain,
-        });
-        abuseEmail = extractRes.data?.abuseEmail;
-        if (abuseEmail) {
-          console.log(`[BATCH SEND] Successfully extracted email: ${abuseEmail}`);
-          // Update domain intelligence for future use
-          if (domainIntel) {
-            await base44.asServiceRole.entities.DomainIntelligence.update(domainIntel.id, { abuse_email: abuseEmail });
-          }
-        }
-      } catch (err) {
-        console.warn(`[BATCH SEND] Failed to extract email: ${err.message}`);
-      }
+      console.log(`[BATCH SEND] No email in DomainIntelligence for domain ${leak.domain}`);
+      // Return error - don't attempt extraction from website
     }
 
     if (!abuseEmail) {
