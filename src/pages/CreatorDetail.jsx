@@ -194,14 +194,8 @@ export default function CreatorDetail() {
         </div>
 
         <div className="text-right">
-          <p className="text-xs text-slate-500 mb-1">Revenue Mensile</p>
-          <p className="text-2xl font-bold text-white">${(creator.monthly_revenue || 0).toLocaleString()}</p>
-          {creator.estimated_loss > 0 && (
-            <>
-              <p className="text-xs text-slate-500 mt-2 mb-1">Perdita Stimata</p>
-              <p className="text-lg font-semibold" style={{ color: '#f87171' }}>${creator.estimated_loss.toLocaleString()}</p>
-            </>
-          )}
+          <p className="text-xs text-slate-500 mb-1">Perdita Stimata</p>
+          <p className="text-2xl font-bold" style={{ color: '#f87171' }}>${(creator.estimated_loss || 0).toLocaleString()}</p>
         </div>
       </div>
 
