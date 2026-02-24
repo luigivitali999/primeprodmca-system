@@ -99,7 +99,7 @@ async function scanKnownDomains(creator, domains, whitelistDomains, base44) {
     if (!domain) continue;
     if (whitelistDomains.has(domain.toLowerCase().replace(/^www\./, ""))) continue;
 
-    const aiResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
+    const aiResponse = await base44.integrations.Core.InvokeLLM({
       prompt: `Search the web for leaked or unauthorized content featuring the creator named "${stageName}" specifically on the website "${domain}" (use site:${domain} in your search).
 Look for pages containing their content: videos, galleries, forum posts, etc.
 Return JSON with:
