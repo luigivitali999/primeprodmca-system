@@ -260,8 +260,11 @@ export default function Creators() {
             <div key={creator.id} style={{ ...cardStyle, padding: 20 }} className="transition-all hover:border-indigo-500/30">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div style={{ width: 44, height: 44, borderRadius: 10, background: 'linear-gradient(135deg,#4f46e5,#3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(135deg,#4f46e5,#3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {creator.profile_image ? (
+                      <img src={creator.profile_image} alt={creator.stage_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                    ) : null}
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: 16, display: creator.profile_image ? 'none' : 'flex' }}>
                       {creator.stage_name?.charAt(0).toUpperCase()}
                     </span>
                   </div>
