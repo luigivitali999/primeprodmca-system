@@ -1,8 +1,19 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import nodemailer from 'npm:nodemailer@6.9.7';
 
-const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
+const BREVO_SMTP_KEY = Deno.env.get("BREVO_SMTP_KEY");
 const FROM_EMAIL = "dmca@myonly.me";
 const FROM_NAME = "PRIME DMCA Intelligence";
+
+const transporter = nodemailer.createTransport({
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: FROM_EMAIL,
+    pass: BREVO_SMTP_KEY,
+  },
+});
 
 function generateNoticeNumber() {
   const ts = Date.now().toString(36).toUpperCase();
@@ -104,25 +115,17 @@ Deno.serve(async (req) => {
 
     console.log(`[BATCH SEND] Sending to ${abuseEmail} for domain ${leak.domain}`);
 
-    const brevoRes = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: { "api-key": BREVO_API_KEY, "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        sender: { name: FROM_NAME, email: FROM_EMAIL },
-        to: [{ email: abuseEmail, name: `Abuse @ ${leak.domain}` }],
-        replyTo: { email: FROM_EMAIL },
+    try {
+      const info = await transporter.sendMail({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: abuseEmail,
         subject: `DMCA Takedown Notice – ${dmcaRequest.notice_number} – ${leak.domain}`,
-        textContent: emailBody,
-      }),
-    });
-
-    const brevoText = await brevoRes.text();
-    console.log(`[BATCH SEND] Brevo response status: ${brevoRes.status}`);
-    console.log(`[BATCH SEND] Brevo response body: ${brevoText}`);
-
-    if (!brevoRes.ok) {
-      console.error(`[BATCH SEND] Brevo error: ${brevoText}`);
-      return Response.json({ error: `Failed to send email: ${brevoText}` }, { status: 500 });
+        text: emailBody,
+      });
+      console.log(`[BATCH SEND] Email sent successfully: ${info.messageId}`);
+    } catch (smtpErr) {
+      console.error(`[BATCH SEND] SMTP error: ${smtpErr.message}`);
+      return Response.json({ error: `Failed to send email: ${smtpErr.message}` }, { status: 500 });
     }
 
     const today = new Date().toISOString().split("T")[0];
