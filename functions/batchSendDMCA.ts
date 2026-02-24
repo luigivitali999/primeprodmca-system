@@ -1,7 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
-const FROM_DOMAIN = "foryoulink.com";
+const FROM_EMAIL = "dmca@foryoulink.com";
+const FROM_NAME = "PRIME DMCA Intelligence";
 
 function generateNoticeNumber() {
   const ts = Date.now().toString(36).toUpperCase();
@@ -93,14 +94,12 @@ Deno.serve(async (req) => {
       return Response.json({ error: "No abuse email found for this domain" }, { status: 400 });
     }
 
-    const creatorSlug = (dmcaRequest.creator_name || "dmca").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 30);
-    const fromEmail = `${creatorSlug}@${FROM_DOMAIN}`;
     const emailBody = buildDMCAEmail({
       creatorName: dmcaRequest.creator_name,
       leakUrl: leak.leak_url,
       domain: leak.domain,
       noticeNumber: dmcaRequest.notice_number,
-      fromEmail,
+      fromEmail: FROM_EMAIL,
     });
 
     console.log(`[BATCH SEND] Sending to ${abuseEmail} for domain ${leak.domain}`);
@@ -109,9 +108,9 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { "api-key": BREVO_API_KEY, "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        sender: { name: dmcaRequest.creator_name, email: fromEmail },
+        sender: { name: FROM_NAME, email: FROM_EMAIL },
         to: [{ email: abuseEmail, name: `Abuse @ ${leak.domain}` }],
-        replyTo: { email: fromEmail },
+        replyTo: { email: FROM_EMAIL },
         subject: `DMCA Takedown Notice – ${dmcaRequest.notice_number} – ${leak.domain}`,
         textContent: emailBody,
       }),
