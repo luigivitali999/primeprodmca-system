@@ -349,8 +349,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: "Creator not found" }, { status: 404 });
     }
 
-    const whitelistDomains = new Set(whitelist.map((w) => w.domain.toLowerCase().replace(/^www\./, "")));
-    const knownDomains = new Set(domains.map((d) => d.domain_name?.toLowerCase().replace(/^www\./, "")));
+    const whitelistDomains = new Set(whitelist.map((w) => extractCleanDomain(w.domain)).filter(Boolean));
+    const knownDomains = new Set(domains.map((d) => extractCleanDomain(d.domain_name)).filter(Boolean));
 
     console.log(`[ONBOARDING SCAN] Starting scan for creator: ${creator.stage_name || creator.legal_name}`);
 
