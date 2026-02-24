@@ -331,7 +331,7 @@ export default function Creators() {
                     Perdita Stimata
                   </span>
                   <span className="text-sm font-bold" style={{ color: '#f87171' }}>
-                    €{estimatedLoss >= 1000 ? `${(estimatedLoss/1000).toFixed(1)}k` : Math.round(estimatedLoss)}
+                    ${estimatedLoss >= 1000 ? `${(estimatedLoss/1000).toFixed(1)}k` : Math.round(estimatedLoss)}
                   </span>
                 </div>
               </div>
@@ -405,22 +405,22 @@ export default function Creators() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.2)' }}>
-                      <SelectItem value="low">Basso (VMC €{VMC_TIER.low})</SelectItem>
-                      <SelectItem value="medium">Medio (VMC €{VMC_TIER.medium})</SelectItem>
-                      <SelectItem value="high">Alto (VMC €{VMC_TIER.high})</SelectItem>
-                      <SelectItem value="vip">VIP (VMC €{VMC_TIER.vip})</SelectItem>
+                      <SelectItem value="low">Basso (VMC ${VMC_TIER.low})</SelectItem>
+                      <SelectItem value="medium">Medio (VMC ${VMC_TIER.medium})</SelectItem>
+                      <SelectItem value="high">Alto (VMC ${VMC_TIER.high})</SelectItem>
+                      <SelectItem value="vip">VIP (VMC ${VMC_TIER.vip})</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                   <Label style={{ color: T.textMuted, fontSize: 12 }}>Valore Personalizzato (€)</Label>
+                   <Label style={{ color: T.textMuted, fontSize: 12 }}>Valore Personalizzato ($)</Label>
                    <Input type="number" value={formData.content_value}
                      onChange={(e) => setFormData({ ...formData, content_value: e.target.value })}
                      placeholder="Sovrascrive il tier"
                      style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }} />
                  </div>
                  <div className="space-y-2">
-                   <Label style={{ color: T.textMuted, fontSize: 12 }}>LTV Media Fan (€)</Label>
+                   <Label style={{ color: T.textMuted, fontSize: 12 }}>LTV Media Fan ($)</Label>
                    <Input type="number" value={formData.ltv_mean_fan}
                      onChange={(e) => setFormData({ ...formData, ltv_mean_fan: e.target.value })}
                      placeholder="Lifetime Value per fan"
