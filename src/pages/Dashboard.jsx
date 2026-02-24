@@ -137,7 +137,7 @@ export default function Dashboard() {
 
       {/* Tables Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TopDomainsTable domains={domains} />
+        <TopDomainsTable domains={domains} leaks={leaks} />
         <CreatorRiskRanking creators={creators} />
       </div>
     </div>
