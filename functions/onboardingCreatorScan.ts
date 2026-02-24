@@ -89,7 +89,7 @@ async function sendDMCAEmail({ creatorName, creatorId, leakUrl, domain, abuseEma
 }
 
 function buildSearchQueries(creator) {
-  const names = [creator.stage_name, creator.legal_name].filter(Boolean);
+  const names = [creator.stage_name, creator.legal_name, ...(creator.aliases || [])].filter(Boolean);
   const uniqueNames = [...new Set(names)];
 
   const keywordsBase = [
