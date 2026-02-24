@@ -235,31 +235,47 @@ IMPORTANT: Only include URLs that are real pages you actually found. Do not inve
 
 async function scanFreely(creator, knownDomains, whitelistDomains, base44) {
   const stageName = creator.stage_name || creator.legal_name;
-
   const legalName = creator.legal_name || stageName;
+  const aliases = creator.aliases || [];
+  const allNames = [...new Set([stageName, legalName, ...aliases].filter(Boolean))];
+
   const searchQueries = buildSearchQueries(creator);
-  // Prendi le prime 20 query più efficaci per non appesantire il prompt
-  const topQueries = searchQueries.slice(0, 20).map((q, i) => `${i + 1}. ${q}`).join("\n");
+  const topQueries = searchQueries.slice(0, 25).map((q, i) => `${i + 1}. ${q}`).join("\n");
+
+  console.log(`[FREE SCAN] Searching for: ${allNames.join(", ")}`);
+  console.log(`[FREE SCAN] Using ${searchQueries.slice(0, 25).length} queries`);
 
   const aiResponse = await base44.integrations.Core.InvokeLLM({
-    prompt: `You are a DMCA investigator. Search Google and Bing for pirated/leaked content of the adult creator "${stageName}" (legal name: "${legalName}").
+    prompt: `You are a DMCA investigator. Your task is to find pirated/leaked adult content of a creator online.
 
-Execute ALL of these searches and report every page you find:
+CREATOR INFO:
+- Stage name: "${stageName}"
+- Legal name: "${legalName}"
+${aliases.length ? `- Aliases: ${aliases.join(", ")}` : ""}
+
+Search Google and Bing using these queries:
 ${topQueries}
 
-Exclude ONLY these official platforms: onlyfans.com, fansly.com, patreon.com, instagram.com, twitter.com, x.com, tiktok.com, youtube.com, reddit.com, threads.net.
+Also try these direct searches:
+- "${stageName}" site:simpcity.su
+- "${stageName}" site:forums.socialmediagirls.com
+- "${stageName}" site:leakedbb.com
+- "${stageName}" site:coomer.su
+- "${legalName}" nude leak
 
-Report every real page found with pirated content. Include forum threads, video sites, file hosting links (mega, gofile, drive), telegram channels, etc.
+IMPORTANT INSTRUCTIONS:
+- Report EVERY page you find that contains leaked/pirated content
+- Include confidence "low" results too - better to report too many than too few
+- Exclude only: onlyfans.com, fansly.com, patreon.com, instagram.com, twitter.com, x.com, tiktok.com, youtube.com
+- If you find NOTHING, still return an empty array - do NOT make up results
 
-Return JSON with:
-- results: array of objects, each with:
-  - url: the exact URL of the page
-  - domain: just the root domain (e.g. "simpcity.su")
+Return JSON:
+- results: array (can be empty) of:
+  - url: exact URL
+  - domain: root domain only (e.g. "simpcity.su")
   - content_type: video/gallery/forum/torrent/mega/telegram/other
   - confidence: high/medium/low
-  - context: 1 sentence describing what was found
-
-Include ALL results with confidence medium or high. Max 20 results.`,
+  - context: what was found (1 sentence)`,
     add_context_from_internet: true,
     response_json_schema: {
       type: "object",
@@ -280,6 +296,11 @@ Include ALL results with confidence medium or high. Max 20 results.`,
       },
     },
   });
+
+  console.log(`[FREE SCAN] AI returned ${aiResponse?.results?.length ?? 0} results`);
+  if (aiResponse?.results?.length > 0) {
+    console.log(`[FREE SCAN] Results: ${JSON.stringify(aiResponse.results.map(r => ({ url: r.url, confidence: r.confidence })))}`);
+  }
 
   if (!aiResponse?.results?.length) return 0;
 
