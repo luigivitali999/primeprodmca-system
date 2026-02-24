@@ -111,6 +111,19 @@ function buildSearchQueries(creator) {
   return queries;
 }
 
+function extractCleanDomain(raw) {
+  if (!raw) return null;
+  try {
+    // If it looks like a URL, parse it
+    const withProto = raw.startsWith("http") ? raw : `https://${raw}`;
+    const url = new URL(withProto);
+    return url.hostname.replace(/^www\./, "").toLowerCase();
+  } catch {
+    // fallback: strip protocol manually
+    return raw.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0].toLowerCase();
+  }
+}
+
 async function scanKnownDomains(creator, domains, whitelistDomains, base44) {
   const stageName = creator.stage_name || creator.legal_name;
   let newLeaks = 0;
@@ -118,9 +131,9 @@ async function scanKnownDomains(creator, domains, whitelistDomains, base44) {
   const today = new Date().toISOString().split("T")[0];
 
   for (const domainEntry of domains) {
-    const domain = domainEntry.domain_name;
+    const domain = extractCleanDomain(domainEntry.domain_name);
     if (!domain) continue;
-    if (whitelistDomains.has(domain.toLowerCase().replace(/^www\./, ""))) continue;
+    if (whitelistDomains.has(domain)) continue;
 
     const legalName = creator.legal_name || stageName;
     const aiResponse = await base44.integrations.Core.InvokeLLM({
