@@ -17,7 +17,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import DocUploadField from '@/components/creators/DocUploadField';
-import { T, cardStyle, RISK_DARK, calcEstimatedLoss, calcRiskScore, riskLevel, VMC_TIER } from '@/components/utils/theme';
+import { T, cardStyle, RISK_DARK, calcEstimatedLoss, calcRiskScore, riskLevel, VMC_TIER, CURRENCY } from '@/components/utils/theme';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";

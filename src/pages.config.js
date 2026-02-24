@@ -57,8 +57,8 @@ import Leaks from './pages/Leaks';
 import PendingApprovals from './pages/PendingApprovals';
 import Pipeline from './pages/Pipeline';
 import Reports from './pages/Reports';
-import Whitelist from './pages/Whitelist';
 import SocialProtection from './pages/SocialProtection';
+import Whitelist from './pages/Whitelist';
 import __Layout from './Layout.jsx';
 
 
@@ -73,8 +73,8 @@ export const PAGES = {
     "PendingApprovals": PendingApprovals,
     "Pipeline": Pipeline,
     "Reports": Reports,
-    "Whitelist": Whitelist,
     "SocialProtection": SocialProtection,
+    "Whitelist": Whitelist,
 }
 
 export const pagesConfig = {

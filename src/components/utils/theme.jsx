@@ -45,13 +45,15 @@ export const STATUS_DARK = {
   rejected:    { bg: 'rgba(100,116,139,0.15)',color: '#94a3b8', label: 'Rifiutato' },
 };
 
-// VMC by tier
+// VMC by tier (USD)
 export const VMC_TIER = {
   low: 12,
   medium: 25,
   high: 60,
   vip: 130,
 };
+
+export const CURRENCY = '$';
 
 // Risk Score 2.0 calculation
 export function calcRiskScore(creator, leaks = [], domains = []) {
