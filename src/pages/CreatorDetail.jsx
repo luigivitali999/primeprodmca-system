@@ -129,8 +129,12 @@ export default function CreatorDetail() {
         </Link>
         <div className="flex items-center gap-3 flex-wrap">
           {scanResult && (
-            <div className="text-sm px-4 py-2 rounded-lg" style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', color: '#a5b4fc' }}>
-              ✓ {scanResult.newLeaks || 0} nuovi leak · {scanResult.pendingApprovals || 0} approvazioni pendenti
+            <div className="text-sm px-4 py-2 rounded-lg" style={{ 
+              background: scanResult.error ? 'rgba(239,68,68,0.1)' : 'rgba(99,102,241,0.1)', 
+              border: scanResult.error ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(99,102,241,0.25)', 
+              color: scanResult.error ? '#f87171' : '#a5b4fc' 
+            }}>
+              {scanResult.error ? `✗ ${scanResult.error}` : `✓ ${scanResult.newLeaks || 0} nuovi leak · ${scanResult.pendingApprovals || 0} approvazioni pendenti`}
             </div>
           )}
           <Button
