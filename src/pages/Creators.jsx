@@ -109,7 +109,7 @@ export default function Creators() {
       legal_name: '',
       stage_name: '',
       email: '',
-      onlyfans_url: '',
+      profile_image: '',
       monthly_revenue: '',
       creator_tier: 'medium',
       content_value: '',
