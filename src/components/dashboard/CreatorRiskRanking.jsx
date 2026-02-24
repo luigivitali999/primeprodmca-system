@@ -40,8 +40,12 @@ export default function CreatorRiskRanking({ creators }) {
                 background: risk.bg, border: `1px solid ${risk.border}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: risk.color, fontSize: 13, fontWeight: 700,
+                overflow: 'hidden',
               }}>
-                {initials}
+                {creator.profile_image
+                  ? <img src={creator.profile_image} alt={creator.stage_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : initials
+                }
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ color: '#cbd5e1', fontSize: 13, fontWeight: 500 }} className="truncate">{creator.stage_name}</p>
