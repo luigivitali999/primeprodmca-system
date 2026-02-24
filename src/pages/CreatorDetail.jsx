@@ -64,6 +64,8 @@ const STATUS_LABELS = {
 export default function CreatorDetail() {
   const urlParams = new URLSearchParams(window.location.search);
   const creatorId = urlParams.get('id');
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
 
   const { data: creator, isLoading: creatorLoading } = useQuery({
     queryKey: ['creator', creatorId],
