@@ -56,6 +56,24 @@ export default function Dashboard() {
     queryFn: () => base44.entities.SocialReport.list('-created_date', 500),
   });
 
+  const queryClient = React.useRef(null);
+  if (!queryClient.current) {
+    queryClient.current = useQuery({
+      queryKey: ['creators'],
+      queryFn: () => base44.entities.Creator.list('-created_date', 100),
+    });
+  }
+
+  // Expose refetch function globally for subscription
+  useEffect(() => {
+    window.__dashboardRefresh = () => {
+      queryClient.current?.refetch?.();
+    };
+    return () => {
+      delete window.__dashboardRefresh;
+    };
+  }, []);
+
   const isLoading = leaksLoading || creatorsLoading || domainsLoading || dmcaLoading || socialLoading;
   const domains = domainsFetch;
 
