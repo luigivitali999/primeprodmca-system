@@ -96,6 +96,18 @@ Deno.serve(async (req) => {
           });
         }
 
+        // ─── UPDATE DOMAIN STATS (REMOVAL CONFIRMED) ────────────
+        try {
+          await base44.asServiceRole.functions.invoke("updateDomainStats", {
+            domain: leak.domain,
+            event_type: "removal_confirmed",
+            leak_id: leak.id,
+          });
+          console.log(`[VERIFY] Domain stats updated for ${leak.domain} (removal confirmed)`);
+        } catch (err) {
+          console.warn(`[VERIFY] Domain stats update failed for ${leak.domain}: ${err.message}`);
+        }
+
         results.removed++;
       } else {
         // Still online - check if follow-up is needed (7+ days since notice)
