@@ -123,8 +123,10 @@ export default function Creators() {
       doc_back_url: '',
       doc_selfie_url: '',
       doc_verified: false,
-    });
-    setEditingCreator(null);
+      aliases: [],
+      });
+      setAliasInput('');
+      setEditingCreator(null);
   };
 
   const handleSubmit = (e) => {
