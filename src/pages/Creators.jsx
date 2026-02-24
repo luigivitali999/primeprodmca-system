@@ -429,6 +429,56 @@ export default function Creators() {
               </div>
             </div>
 
+            {/* Aliases */}
+            <div className="space-y-2">
+              <Label style={{ color: T.textMuted, fontSize: 12 }}>Alias / Username Alternativi</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={aliasInput}
+                  onChange={(e) => setAliasInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const val = aliasInput.trim();
+                      if (val && !formData.aliases.includes(val)) {
+                        setFormData({ ...formData, aliases: [...formData.aliases, val] });
+                      }
+                      setAliasInput('');
+                    }
+                  }}
+                  placeholder="Scrivi un alias e premi Invio..."
+                  style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.2)', color: T.text }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const val = aliasInput.trim();
+                    if (val && !formData.aliases.includes(val)) {
+                      setFormData({ ...formData, aliases: [...formData.aliases, val] });
+                    }
+                    setAliasInput('');
+                  }}
+                  style={{ borderColor: 'rgba(99,102,241,0.3)', color: '#a5b4fc', background: 'transparent', flexShrink: 0 }}
+                >
+                  Aggiungi
+                </Button>
+              </div>
+              {formData.aliases.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {formData.aliases.map((alias, idx) => (
+                    <span key={idx} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
+                      style={{ background: 'rgba(99,102,241,0.15)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.3)' }}>
+                      {alias}
+                      <button type="button" onClick={() => setFormData({ ...formData, aliases: formData.aliases.filter((_, i) => i !== idx) })}>
+                        <X className="w-3 h-3 opacity-60 hover:opacity-100" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Economic tier */}
             <div style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 8, padding: '14px' }} className="space-y-3">
               <p style={{ color: T.indigoSoft, fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>📊 Parametri Economic Impact Engine</p>
