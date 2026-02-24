@@ -94,6 +94,13 @@ Deno.serve(async (req) => {
       return Response.json({ error: "No abuse email found for this domain" }, { status: 400 });
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(abuseEmail)) {
+      console.error(`[BATCH SEND] INVALID EMAIL FORMAT: "${abuseEmail}" (length: ${abuseEmail.length})`);
+      return Response.json({ error: `Invalid email format: "${abuseEmail}"` }, { status: 400 });
+    }
+
     const emailBody = buildDMCAEmail({
       creatorName: dmcaRequest.creator_name,
       leakUrl: leak.leak_url,
