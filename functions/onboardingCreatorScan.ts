@@ -74,21 +74,16 @@ async function sendDMCAEmail({ creatorName, creatorId, leakUrl, domain, abuseEma
     base44.asServiceRole.entities.Leak.update(leakId, { status: "notice_sent", first_notice_date: new Date().toISOString().split("T")[0] }),
   ]);
 
-  // ─── UPDATE DOMAIN STATS ────────────────────────────────────
+  // ─── UPDATE DOMAIN STATS (EVENT-DRIVEN) ────────────────────────
   try {
-    const statsRes = await fetch(`${Deno.env.get("BASE44_APP_URL") || ""}/api/functions/updateDomainStats`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": req.headers.get("Authorization") || "" },
-      body: JSON.stringify({ domain, event_type: "dmca_sent", leak_id: leakId }),
-    }).catch(err => {
-      console.warn(`[DMCA EMAIL] Could not update domain stats: ${err.message}`);
-      return null;
+    await base44.asServiceRole.functions.invoke("updateDomainStats", {
+      domain,
+      event_type: "dmca_sent",
+      leak_id: leakId,
     });
-    if (statsRes?.ok) {
-      console.log(`[DMCA EMAIL] Domain stats updated for ${domain}`);
-    }
+    console.log(`[DMCA EMAIL] Domain stats updated for ${domain}`);
   } catch (err) {
-    console.warn(`[DMCA EMAIL] Domain stats update error: ${err.message}`);
+    console.warn(`[DMCA EMAIL] Domain stats update failed: ${err.message}`);
   }
 
   return true;
