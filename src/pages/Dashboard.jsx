@@ -9,7 +9,9 @@ import {
   Users,
   Globe,
   FileText,
-  Activity
+  Activity,
+  Mail,
+  CheckCheck
 } from 'lucide-react';
 import StatsCard from '@/components/dashboard/StatsCard';
 import LeaksByStatus from '@/components/dashboard/LeaksByStatus';
@@ -82,6 +84,12 @@ export default function Dashboard() {
     socialReports.filter(r => r.creator_id === c.id && ['Segnalato', 'In attesa', 'Escalation'].includes(r.status)).length > 3
   );
 
+  // DMCA Stats
+  const dmcaSent = dmcaRequests.filter(d => ['sent', 'acknowledged', 'processing', 'completed'].includes(d.status));
+  const dmcaSuccessful = dmcaRequests.filter(d => d.removal_confirmed);
+  const dmcaFailed = dmcaRequests.filter(d => d.status === 'rejected');
+  const dmcaSuccessRate = dmcaRequests.length > 0 ? Math.round((dmcaSuccessful.length / dmcaSent.length) * 100) : 0;
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -123,27 +131,18 @@ export default function Dashboard() {
           color="emerald"
         />
         <StatsCard
-          title="Tempo Medio Rimozione"
-          value={`${avgRemovalTime}g`}
-          subtitle="dalla scoperta"
-          icon={Clock}
-          color="blue"
+          title="DMCA Successo"
+          value={`${dmcaSuccessRate}%`}
+          subtitle={`${dmcaSuccessful.length}/${dmcaSent.length} rimosse`}
+          icon={CheckCheck}
+          color="emerald"
         />
         <StatsCard
-          title="Perdita Stimata"
-          value={`$${(leaks.filter(l => l.status !== 'removed' && l.status !== 'rejected').reduce((sum, l) => {
-            const creator = creators.find(c => c.id === l.creator_id);
-            const domain = domains.find(d => d.domain_name === l.domain);
-            const VMC_TIER = { low: 12, medium: 25, high: 60, vip: 130 };
-            const vmc = creator?.content_value || VMC_TIER[creator?.creator_tier] || 25;
-            const fdd = domain?.diffusion_factor || 1.0;
-            const daysOnline = l.days_online || 1;
-            const iit = 1 + (daysOnline / 30) * 0.15;
-            return sum + (vmc * fdd * iit);
-          }, 0) / 1000).toFixed(1)}k`}
-          subtitle="accumulata"
-          icon={TrendingUp}
-          color="red"
+          title="DMCA Inviate"
+          value={dmcaSent.length}
+          subtitle={`${dmcaFailed.length} rifiutate`}
+          icon={Mail}
+          color="blue"
         />
       </div>
 
@@ -160,6 +159,61 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TopDomainsTable domains={domains} leaks={leaks} />
         <CreatorRiskRanking creators={creators} />
+      </div>
+
+      {/* DMCA Success Status */}
+      <div style={{ background: '#0a1120', border: '1px solid rgba(99,102,241,0.12)', borderRadius: '0.75rem', padding: '1.5rem' }}>
+        <h2 style={{ color: '#e2e8f0', fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Ultimi risultati DMCA</h2>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', fontSize: '0.875rem', color: '#cbd5e1' }}>
+            <thead style={{ borderBottom: '1px solid rgba(99,102,241,0.12)' }}>
+              <tr>
+                <th style={{ textAlign: 'left', padding: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Notice</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Domain</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Status</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>Risultato</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dmcaRequests.slice(0, 8).map(req => (
+                <tr key={req.id} style={{ borderBottom: '1px solid rgba(99,102,241,0.08)' }}>
+                  <td style={{ padding: '0.75rem', fontSize: '0.75rem', fontFamily: 'monospace' }}>{req.notice_number || 'N/A'}</td>
+                  <td style={{ padding: '0.75rem' }}>{req.sent_to_entity || '-'}</td>
+                  <td style={{ padding: '0.75rem' }}>
+                    <span style={{
+                      display: 'inline-block',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      background: req.status === 'completed' ? 'rgba(16,185,129,0.15)' : req.status === 'rejected' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)',
+                      color: req.status === 'completed' ? '#86efac' : req.status === 'rejected' ? '#f87171' : '#fcd34d',
+                      border: req.status === 'completed' ? '1px solid rgba(16,185,129,0.3)' : req.status === 'rejected' ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(245,158,11,0.3)',
+                    }}>
+                      {req.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: '0.75rem' }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      background: req.removal_confirmed ? 'rgba(16,185,129,0.15)' : 'rgba(229,231,235,0.05)',
+                      color: req.removal_confirmed ? '#86efac' : '#9ca3af',
+                      border: req.removal_confirmed ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(209,213,219,0.3)',
+                    }}>
+                      {req.removal_confirmed ? '✓ Rimosso' : '○ In sospeso'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
