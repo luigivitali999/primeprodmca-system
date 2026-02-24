@@ -100,13 +100,21 @@ async function scanKnownDomains(creator, domains, whitelistDomains, base44) {
     if (whitelistDomains.has(domain.toLowerCase().replace(/^www\./, ""))) continue;
 
     const aiResponse = await base44.integrations.Core.InvokeLLM({
-      prompt: `Search the web for leaked or unauthorized content featuring the creator named "${stageName}" specifically on the website "${domain}" (use site:${domain} in your search).
-Look for pages containing their content: videos, galleries, forum posts, etc.
+      prompt: `You are a DMCA investigator. Search Google for leaked/pirated adult content of the creator "${stageName}" on the site "${domain}".
+
+Use these specific Google search queries:
+1. site:${domain} "${stageName}"
+2. site:${domain} "${stageName}" leak
+3. site:${domain} "${stageName}" onlyfans
+
+For each query, check if real pages exist with their content (videos, galleries, photos, forum threads with their material).
+
 Return JSON with:
-- found: boolean
-- urls: array of specific page URLs found (max 5, only real URLs)
-- content_types: array of types (video/gallery/forum/etc)
-Only return found:true if you are confident the content belongs to this creator.`,
+- found: boolean (true ONLY if you found real pages with their content)
+- urls: array of real, specific page URLs you found (NOT the domain homepage, actual content pages, max 5)
+- content_types: array of types for each url (video/gallery/forum/torrent/other)
+
+IMPORTANT: Only include URLs that are real pages you actually found. Do not invent URLs.`,
       add_context_from_internet: true,
       response_json_schema: {
         type: "object",
