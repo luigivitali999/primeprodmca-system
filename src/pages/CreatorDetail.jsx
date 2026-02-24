@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import StatsCard from '@/components/dashboard/StatsCard';
+import { useQueryClient } from '@tanstack/react-query';
 
 const RISK_COLORS = {
   critical: 'bg-red-100 text-red-700 border-red-200',
