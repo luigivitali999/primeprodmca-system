@@ -175,6 +175,7 @@ IMPORTANT: Only include URLs that are real pages you actually found. Do not inve
     const existingLeaks = await base44.asServiceRole.entities.Leak.filter({ creator_id: creator.id, domain });
     const existingUrls = new Set(existingLeaks.map((l) => l.leak_url));
     const abuseEmail = domainEntry.abuse_email || domainEntry.dmca_contact;
+    console.log(`[KNOWN DOMAIN SCAN] ${domain}: found=${aiResponse.found}, urls=${aiResponse.urls.length}`);
 
     for (const url of aiResponse.urls) {
       if (!url || existingUrls.has(url)) continue;
