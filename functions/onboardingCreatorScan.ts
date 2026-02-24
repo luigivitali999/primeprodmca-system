@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
     // ─── 2. EXECUTE SERP QUERIES + COLLECT ALL RESULTS ──────────────────────
     const allSerpResults = [];
     
-    for (const query of queries.slice(0, 40)) {
+    for (const query of queries.slice(0, 15)) {
       const [googleResults, bingResults] = await Promise.all([
         querySerpAPI("google", query),
         querySerpAPI("bing", query),
