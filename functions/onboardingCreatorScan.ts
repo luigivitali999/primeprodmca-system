@@ -215,14 +215,16 @@ Deno.serve(async (req) => {
     
     // ─── 1. GENERATE QUERIES ──────────────────────────────────────────────
     const keywords = [
-      "onlyfans leak", "leaked", "nude", "mega",
-      "telegram", "ppv leak", "free onlyfans",
+      "onlyfans leak", "onlyfans leaks", "leaked", "nude", "nudes", "mega",
+      "telegram", "full pack", "free onlyfans", "ppv leak", "sex tape",
+      "video leak", "archive", "zip", "onlyfans 2024", "onlyfans 2025",
     ];
 
     const queries = [];
-    const primaryName = allNames[0];
-    for (const kw of keywords) {
-      queries.push(`"${primaryName}" ${kw}`);
+    for (const name of allNames) {
+      for (const kw of keywords) {
+        queries.push(`"${name}" ${kw}`);
+      }
     }
 
     console.log(`[SCAN] Generated ${queries.length} queries`);
