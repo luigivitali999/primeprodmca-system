@@ -64,6 +64,14 @@ export default function Pipeline() {
     queryFn: () => base44.entities.Creator.list('-created_date', 200),
   });
 
+  // ─── REAL-TIME SUBSCRIPTION TO LEAK CHANGES ────────────────
+  useEffect(() => {
+    const unsubscribe = base44.entities.Leak.subscribe((event) => {
+      queryClient.invalidateQueries({ queryKey: ['leaks'] });
+    });
+    return unsubscribe;
+  }, [queryClient]);
+
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Leak.update(id, data),
     onSuccess: () => {
